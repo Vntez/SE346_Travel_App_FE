@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native"
+import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
     background: {
@@ -9,7 +9,8 @@ const styles = StyleSheet.create({
     container: {
         margin: 10,
         flex: 1,
-        justifyContent: 'center',
+        //  justifyContent: 'center',
+        //backgroundColor: 'pink'
     },
     overlay: {
         ...StyleSheet.absoluteFillObject, // Phủ toàn bộ ImageBackground
@@ -22,7 +23,7 @@ const styles = StyleSheet.create({
         rowGap: 10
     },
     imageFrame: {
-        width: 360,
+        width: '100%',
         height: 180,
         borderWidth: 2,
         borderColor: "#ddd",
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: '#47CCF0',
         paddingVertical: 15,
-        width: 350,
+        width: '100%',
         borderRadius: 50, // Bo tròn hoàn toàn hai đầu
         alignItems: 'center',
         justifyContent: 'center',
@@ -103,12 +104,51 @@ const styles = StyleSheet.create({
     lineContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        width: '90%', 
+        width: '90%',
     },
     line: {
         flex: 1,
         height: 1,
         backgroundColor: '#7e7e7e',
+    },
+    roundButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 0.5,
+        borderColor: 'rgba(255, 255, 255, 0.5)',
+    },
+    detailCard: {
+        flexDirection: 'row',
+        backgroundColor: 'white',
+        margin: 10,
+        marginTop: 20,
+        borderRadius: 20,
+        shadowColor: "#000000",
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.1,
+        shadowRadius: 15,
+        elevation: 15,
+    },
+    modalContainer: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    fullImage: {
+        width: '100%',
+        height: '80%',
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 50,
+        right: 20,
+        zIndex: 1,
+        padding: 10,
     },
 })
 
