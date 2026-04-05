@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { MAIN_COLOR } from '../AuthStyles';
 
-const MAIN_COLOR = '#00AEEF'; // Màu xanh bạn yêu cầu
-const BACKGROUND_COLOR = '#E0F0F7'; // Màu xanh nhạt cho nền thanh
+const BAR_COLOR = '#E0F0F7'; // Màu xanh nhạt cho nền thanh
 
 export const RatingStartBar = ({ ratingValue, size }: { ratingValue: number; size: number }) => {
   return (
@@ -80,12 +80,12 @@ export const ratingBarStyles = StyleSheet.create({
   starText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: BACKGROUND_COLOR, // Số sao bên trái màu đen
+    color: BAR_COLOR, // Số sao bên trái màu đen
   },
   progressTrack: {
     flex: 1, // Để thanh chiếm hết không gian còn lại ở giữa
     height: 12,
-    backgroundColor: BACKGROUND_COLOR,
+    backgroundColor: BAR_COLOR,
     borderRadius: 6,
     overflow: 'hidden', // Quan trọng: để phần filled không tràn ra lề bo tròn
     marginRight: 15,
@@ -101,7 +101,7 @@ export const ratingBarStyles = StyleSheet.create({
   },
   percentageText: {
     fontSize: 14,
-    color: BACKGROUND_COLOR, // Phần trăm bên phải màu đen
+    color: BAR_COLOR, // Phần trăm bên phải màu đen
   },
 });
 

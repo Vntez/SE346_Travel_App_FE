@@ -1,7 +1,8 @@
-import styles from '@/app/(tabs)/AuthStyles';
+import styles, {MAIN_COLOR} from '@/app/(tabs)/AuthStyles';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { FlatList, Image, Pressable, Text, TextInput, View } from 'react-native';
+
 
 type Place = {
     Id: string;
@@ -160,7 +161,7 @@ const renderPlaceCard = (item: Place, navigation: any) => {
                 </View>
 
                 <Pressable >
-                    <Text style={{ fontWeight: '600', color: '#00AEEF' }}
+                    <Text style={{ fontWeight: '600', color: MAIN_COLOR }}
                         onPress={() => navigation.navigate("Detail Location")}>
                         Details
                     </Text>

@@ -1,5 +1,8 @@
 import { StyleSheet } from "react-native";
 
+export const MAIN_COLOR = '#00AEEF';
+export const BACKGROUND_COLOR = '';
+
 const styles = StyleSheet.create({
     background: {
         flex: 1,
@@ -60,7 +63,7 @@ const styles = StyleSheet.create({
         borderColor: '#ddd',
     },
     linkText: {
-        color: '#00AEEF',
+        color: MAIN_COLOR,
         fontWeight: '500',
     },
     containerImageGG_Apple: {
@@ -83,7 +86,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     button: {
-        backgroundColor: '#00AEEF',
+        backgroundColor: MAIN_COLOR,
         paddingVertical: 15,
         width: '100%',
         borderRadius: 50, // Bo tròn hoàn toàn hai đầu
@@ -119,7 +122,7 @@ const styles = StyleSheet.create({
 
     avatarBorder: {
         borderWidth: 3,
-        borderColor: "#0b0d78",
+        borderColor: MAIN_COLOR,
         width: 150,
         height: 150,
         //backgroundColor: "#fff",
@@ -135,14 +138,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         //borderWidth: 5,
-        //borderColor: "#4d84be",
+        //borderColor: MAIN_COLOR,
         width: 50,
         height: 50,
         borderRadius: 70,
         position: 'absolute',
         bottom: 5, // combine with position to be clear
         right: 10,
-        shadowColor: "#4d84be",
+        shadowColor: MAIN_COLOR,
         shadowOpacity: 0.5, 
         shadowRadius: 10, // cang be cang net, lon thi lan trong
         shadowOffset: {width: 0, height: 4},
@@ -150,7 +153,7 @@ const styles = StyleSheet.create({
 
     // borderAvatar: {
     //     borderWidth: 5,
-    //     borderColor: "#4d84be",
+    //     borderColor: MAIN_COLOR,
     
 
     buttonText: {
@@ -254,6 +257,42 @@ const styles = StyleSheet.create({
         right: 20,
         zIndex: 1,
         padding: 10,
+    },
+
+    bottomInputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        backgroundColor: '#fff',
+        borderTopWidth: 1,
+        borderTopColor: '#eee',
+        elevation: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+    },
+    textInput: {
+        flex: 1,
+        backgroundColor: '#f0f2f5',
+        borderRadius: 25,
+        paddingHorizontal: 15,
+        paddingVertical: 8,
+        marginHorizontal: 10,
+        fontSize: 15,
+        maxHeight: 100, // giới hạn chiều cao khi nhập nhiều dòng
+    },
+    addPhotoIcon: {
+        padding: 5,
+    },
+    sendButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: MAIN_COLOR
     },
 })
 
