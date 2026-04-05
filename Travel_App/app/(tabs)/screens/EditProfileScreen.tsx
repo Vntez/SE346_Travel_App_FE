@@ -5,7 +5,7 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 export default function EditProfileScreen() {
     return (
-        <View style={{ flex: 1, justifyContent:'center', marginTop: 40 }}>
+        <View style={{ flex: 1, justifyContent:'center', marginTop: 0, backgroundColor: '#FFFFFF' }}>
             <View style={[styles.container]}>
                 <View style={{alignItems:'center'}}>
                     <View style={styles.avatarContainer}>

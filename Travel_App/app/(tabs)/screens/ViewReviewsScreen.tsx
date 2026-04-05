@@ -1,29 +1,14 @@
-import React, {useState} from 'react';
-import { Image, StyleSheet, Text, View, ImageBackground, TouchableHighlight, TouchableOpacity, FlatList } from 'react-native';
 import styles from '@/app/(tabs)/AuthStyles';
+import { Ionicons } from '@expo/vector-icons';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import Octicons from '@expo/vector-icons/Octicons';
+import React, { useState } from 'react';
+import { FlatList, Image, ImageBackground, Pressable, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native';
+import { calculateRatingStats, RatingBar, ratingBarStyles, RatingStartBar } from '../components/Rating';
 import { ReviewData } from '../MOCK_DATA/Review';
-import { Rating } from 'react-native-ratings';
-import { calculateRatingStats, ratingBarStyles, RatingBar} from '../components/RatingStatistics';
+import {PicturesContainer} from '../components/ReviewPicture'
 
-export default function ViewReviewsScreen() {
-    const RatingStart = ({ ratingValue, size }: { ratingValue: number, size: number }) => {
-        return (
-            <Rating
-                type='star'
-                ratingCount={5}
-                startingValue={ratingValue} 
-                imageSize={size}
-                readonly={true}     // Chỉ để hiển thị, không cho người dùng kéo
-                fractions={1}       // Độ chi tiết (1 là chia đôi, 2 là chia nhỏ nữa)
-                jumpValue={0.5}
-                tintColor="#ffff"   // Phải trùng với màu nền phía sau để không bị lộ viền
-                ratingBackgroundColor='#bfb6b6'
-            />
-        );
-    }
-
+export default function ViewReviewsScreen({navigation} : any) {
     const ReviewItem = ({ item}: { item: any }) => {
         const [isLiked, setIsLiked] = useState(false);
         const [likesCount, setLikesCount] = useState(item.likes);
@@ -35,7 +20,7 @@ export default function ViewReviewsScreen() {
             setLikesCount(likesCount + 1); // Bấm thì tăng like
             }
             setIsLiked(!isLiked); // Đảo ngược trạng thái true/false
-            console.log(item.countingRate);
+            //console.log(item.Rate);
         };
 
         return (
@@ -55,7 +40,7 @@ export default function ViewReviewsScreen() {
                                 {item.username}
                             </Text>
                             <View style={{ alignItems: 'flex-start', marginLeft: 0 }}>
-                                <RatingStart ratingValue={item.ratingValue} size={15} />
+                                <RatingStartBar ratingValue={item.Rate} size={20} />
                             </View>
                         </View>
                     </View>
@@ -71,21 +56,9 @@ export default function ViewReviewsScreen() {
                     </Text>
                 </View>
 
-                {/* Images: Hiển thị tối đa 3 hình */}
-                {item.images && item.images.length > 0 && (
-                    <View style={{ flexDirection: 'row', columnGap: 5, marginBottom: 15 }}>
-                        {item.images.slice(0, 3).map((imgUri: string, index: number) => (
-                            <Image
-                                key={index}
-                                source={{ uri: imgUri }}
-                                style={{ width: 120, height: 100, borderRadius: 10 }}
-                                resizeMode="cover"
-                            />
-                        ))}
-                    </View>
-                )}
+                <PicturesContainer pictures={item.images}></PicturesContainer>
 
-                {/* Footer: Like and Report */}
+                {/*Like and Report */}
                 <View style={{ flexDirection: 'row', columnGap: 25, marginTop: 5 }}>
                     <TouchableHighlight underlayColor="transparent" onPress={handlePress}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 5 }}>
@@ -106,22 +79,36 @@ export default function ViewReviewsScreen() {
     const raingStats = calculateRatingStats(ReviewData);
 
     return (
-        <View style={{ flex: 1, backgroundColor: '#F5F5F5' }}>
+        <View style={{ flex: 1, backgroundColor: '#FFFFFF'  }}>
             <FlatList
                 data={ReviewData}
                 renderItem={({ item }) => <ReviewItem item={item} />}
                 keyExtractor={(item) => item.id.toString()}
                 ListHeaderComponent={
                     <View>
-                        <View style={{alignItems: 'center', paddingHorizontal: 10, paddingTop: 10}}>
+                        <View style={{alignItems: 'center'}}>
                             <ImageBackground
                                 source={{ uri: "https://i.pinimg.com/1200x/6f/54/22/6f542272eef1c2846c752192ff2cd542.jpg" }}
-                                style={[styles.imageFrame, { width: '100%', height: 450, borderRadius: 50}]}
+                                style={[styles.imageFrame, { width: '100%', height: 450, borderRadius: 0}]}
                                 resizeMode="cover"
                             >
                                 <View style={[styles.overlayReview, { flex: 1, justifyContent: 'center', alignItems: 'center' }]}>
+                                    <Pressable style={[styles.roundButton, {
+                                        position: 'absolute',
+                                        left: 15,
+                                        top: 15,
+                                        zIndex: 1,
+                                        backgroundColor: 'rgba(0,0,0,0.2)',
+                                        borderRadius: 20,
+                                        padding: 5
+                                    }]}
+                                        onPress={() => navigation.navigate("Detail Location")}>
+                                        <Ionicons name="chevron-back" size={25}
+                                            color="white" />
+                                    </Pressable>
+
                                     <Text style={{ color: "#00AEEF", fontSize: 60, fontWeight: 'bold' }}>4.9</Text>
-                                    <RatingStart ratingValue={4.9} size={30} />
+                                    <RatingStartBar ratingValue={4.9} size={30} />
                                     <Text style={{ color: "#fff", fontSize: 16, marginTop: 10, letterSpacing: 1 }}>
                                         850 VERIFIED REVIEWS
                                     </Text>
@@ -140,7 +127,7 @@ export default function ViewReviewsScreen() {
                             </ImageBackground>
                         </View>
 
-                        <View style={{alignItems:'center', marginVertical: 10}}>
+                        <View style={{alignItems:'center', marginVertical: 10, marginHorizontal: 20}}>
                             <TouchableOpacity style={[styles.button, { marginTop: 10}]}>
                                 <Text style={styles.buttonText}> Write your review</Text>
                             </TouchableOpacity>

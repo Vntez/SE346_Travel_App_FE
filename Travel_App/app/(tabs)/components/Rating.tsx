@@ -1,9 +1,36 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { ratingStatsType } from '../types/Review';
 
 const MAIN_COLOR = '#00AEEF'; // Màu xanh bạn yêu cầu
 const BACKGROUND_COLOR = '#E0F0F7'; // Màu xanh nhạt cho nền thanh
+
+export const RatingStartBar = ({ ratingValue, size }: { ratingValue: number; size: number }) => {
+  return (
+    <View style={{ flexDirection: 'row', marginLeft: 5 }}>
+      {[1, 2, 3, 4, 5].map((star) => {
+        let iconName: any = "star-outline";
+
+        // 0.8 - 1.0 : 1 sao
+        // 0.4 - 0.7 : nửa sao
+        if (ratingValue >= star - 0.2) {
+          iconName = "star";
+        } else if (ratingValue >= star - 0.6) {
+          iconName = "star-half";
+        }
+
+        return (
+          <Ionicons
+            key={star}
+            name={iconName}
+            size={size}
+            color='#FFD700'
+          />
+        );
+      })}
+    </View>
+  );
+};
 
 export const RatingBar = ({ stars, percentage }: { stars: number, percentage: number }) => {
   return (
@@ -86,8 +113,8 @@ export const calculateRatingStats = (data: any[]) => {
 
   // Bước 2: Duyệt qua dữ liệu và đếm
   data.forEach(item => {
-    if (counts[item.countingRate] !== undefined) {
-        counts[item.countingRate]++;
+    if (counts[item.Rate] !== undefined) {
+        counts[item.Rate]++;
     }
   });
 

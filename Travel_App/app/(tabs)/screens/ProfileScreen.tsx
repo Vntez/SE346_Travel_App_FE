@@ -3,9 +3,9 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({navigation} : any) {
     return (
-        <View style={{ flex: 1, marginTop: 40}}>
+        <View style={{ flex: 1, marginTop: 40, backgroundColor: '#ffff'}}>
             <View style={[styles.container]}>
                 <View style={{alignItems:'center'}}>
                     <View style={styles.avatarContainer}>
@@ -15,7 +15,7 @@ export default function ProfileScreen() {
                             </Image>
                         </View>
                         
-                        <TouchableOpacity style={styles.iconContainer}>
+                        <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate("Edit Profile")}>
                             <Image source={{uri: 'https://cdn-icons-png.flaticon.com/128/10337/10337572.png'}}
                                 style={{width: '100%', height: '100%'}}>
                             </Image>
@@ -103,7 +103,7 @@ export default function ProfileScreen() {
                         <Ionicons name="chevron-forward" size={20} color="#cbc8c8"/>
                     </TouchableOpacity> */}
 
-                    <TouchableOpacity style={[styles.profileMenuItemContainer]}>
+                    <TouchableOpacity style={[styles.profileMenuItemContainer]} onPress={() => navigation.navigate('Log Out')}>
                         <View style={[styles.profileMenuItemIcon, {backgroundColor: '#ffff'}]}>
                             <Ionicons name="log-out" size={30} color="#eb2727"/>
                         </View>
