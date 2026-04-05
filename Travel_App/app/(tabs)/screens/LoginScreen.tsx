@@ -80,6 +80,7 @@ export default function RegisterScreen() {
                             </Text>
                         </TouchableOpacity>
                     </View>
+                    
                     <View style={[styles.containerChild, {marginTop: 10, alignItems:'center'}]}>
                         <Pressable style={styles.button} onPress={() => alert('Pressed')}>
                             <Text style={styles.buttonText}>Log in</Text>

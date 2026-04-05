@@ -12,7 +12,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     overlay: {
-        ...StyleSheet.absoluteFillObject, // Phủ toàn bộ ImageBackground
+        ...StyleSheet.absoluteFillObject, // absolute, top/right/bottom/left = 0
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Màu đen với độ trong suốt 50%
+    },
+
+    overlayReview: {
+        ...StyleSheet.absoluteFillObject, // absolute, top/right/bottom/left = 0
         backgroundColor: 'rgba(0, 0, 0, 0.5)', // Màu đen với độ trong suốt 50%
     },
     containerChild: {
@@ -77,19 +82,76 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     button: {
-        backgroundColor: '#47CCF0',
+        backgroundColor: '#00AEEF',
         paddingVertical: 15,
         width: 350,
         borderRadius: 50, // Bo tròn hoàn toàn hai đầu
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 20,
-        shadowColor: '#000',
+        shadowColor: '#020413',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 5,
         elevation: 5,
     },
+
+    buttonLogOut: {
+        backgroundColor: '#efdbdb',
+        paddingVertical: 15,
+        width: 350,
+        borderRadius: 50, // Bo tròn hoàn toàn hai đầu
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 5,
+        //shadowColor: '#000',
+        //shadowOffset: { width: 0, height: 4 },
+        //shadowOpacity: 0.2,
+        //shadowRadius: 5,
+        //elevation: 5,
+    },
+    
+    avatarContainer : {
+        width: 160,
+        height: 160,
+    },
+
+    avatarBorder: {
+        borderWidth: 3,
+        borderColor: "#0b0d78",
+        width: 150,
+        height: 150,
+        //backgroundColor: "#fff",
+    //     //backgroundColor: "#fff",
+    //     borderRadius: 70,
+    //     overflow: "hidden",
+        borderRadius: 70,
+        overflow: "hidden",
+        position: 'relative',
+    },
+
+    iconContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        //borderWidth: 5,
+        //borderColor: "#4d84be",
+        width: 50,
+        height: 50,
+        borderRadius: 70,
+        position: 'absolute',
+        bottom: 5, // combine with position to be clear
+        right: 10,
+        shadowColor: "#4d84be",
+        shadowOpacity: 0.5, 
+        shadowRadius: 10, // cang be cang net, lon thi lan trong
+        shadowOffset: {width: 0, height: 4},
+    },
+
+    // borderAvatar: {
+    //     borderWidth: 5,
+    //     borderColor: "#4d84be",
+    
+
     buttonText: {
         color: '#FFFFFF',
         fontSize: 18,
@@ -110,6 +172,48 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: '#7e7e7e',
     },
+
+    profileMenuContainer: {
+        //flex: 1,
+        flexDirection: 'column',
+        marginHorizontal: 20,
+        marginTop: 30,
+        borderRadius: 30,
+        overflow: 'hidden',
+        //backgroundColor:'black'
+    },
+
+    profileMenuItemContainer: {
+        //flex: 1,
+        flexDirection: 'row',
+        //position: 'relative',
+        padding: 10,
+        //margin: 10,
+        borderRadius: 10,
+        //height: 80,
+        columnGap: 15,
+        alignItems:'center',
+        justifyContent: 'flex-start',
+        borderBottomColor: '#eae4e4',
+        borderBottomWidth: 2,
+        backgroundColor: "#ffffff"
+    },
+
+    profileMenuItemIcon: {
+        //position: 'relative',
+        width: 45,
+        height: 45,
+        borderRadius: 100,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    profileMenuTextContainer: {
+        flexDirection: 'column',
+        flex: 1, // làm đầy phần text thì đẩy được phần > ra ngoài cùng
+        //marginRight: 70,
+        //backgroundColor: 'blue'
+    }
 })
 
 export default styles;
