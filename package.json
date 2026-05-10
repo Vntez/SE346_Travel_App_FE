@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "@react-navigation/bottom-tabs": "^7.15.6",
+    "@react-navigation/native": "^7.1.33",
+    "@react-navigation/stack": "^7.8.5",
+    "@types/react": "^19.2.14",
+    "@types/react-native": "^0.73.0",
+    "axios": "^1.13.6",
+    "expo": "^55.0.8",
+    "expo-checkbox": "~55.0.3",
+    "expo-haptics": "~55.0.9",
+    "expo-router": "~55.0.7",
+    "expo-secure-store": "~55.0.9",
+    "expo-status-bar": "~55.0.4",
+    "expo-web-browser": "~55.0.10",
+    "react-native-dotenv": "^3.4.11",
+    "react-native-safe-area-context": "~5.6.2",
+    "react-native-screens": "~4.23.0",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.2"
+  }
+}
