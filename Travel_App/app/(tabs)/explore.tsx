@@ -1,5 +1,6 @@
-import RegisterScreen from './screens/RegisterScreen';
+// import RegisterScreen from './screens/RegisterScreen';
 
-export default function RegisterTabScreen() {
-  return <RegisterScreen />;
-}
+// export default function RegisterTabScreen() {
+//   return <RegisterScreen />;
+// }
+

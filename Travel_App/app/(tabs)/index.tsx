@@ -1,7 +1,10 @@
 import DetailLocationScreen from './screens/DetailLocationScreen';
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
+import LogoutScreen from './screens/LogoutScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import ViewReviewsScreen from './screens/ViewReviewsScreen';
 import RegisterScreen from './screens/RegisterScreen';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -43,7 +46,7 @@ const RootNavigation = () => {
   const { user } = useAuth();
   return (
     <>
-      {user ? (
+      {!user ? (
         <Stack.Navigator>
           <Stack.Screen
             name="Main"
@@ -54,6 +57,27 @@ const RootNavigation = () => {
             name="Detail Location"
             component={DetailLocationScreen}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Log Out"
+            component={LogoutScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="All Reviews"
+            component={ViewReviewsScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Edit Profile"
+            component={EditProfileScreen}
+            options={{ headerShown: true, presentation: 'modal', title: "Edit Profile" , headerStyle: 
+              {
+                backgroundColor: '#FFFFFF' ,
+              },
+            headerShadowVisible: false,
+            headerTintColor: '#000',
+            }}
           />
         </Stack.Navigator>
       ) : (

@@ -1,7 +1,9 @@
-import styles from '@/app/(tabs)/AuthStyles';
+import styles from './DetailLocationScreen.styles';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Image, Modal, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { RatingStartBar } from '../components/Rating';
+import { PicturesContainer } from '../components/ReviewPicture';
 
 interface Review {
     ava: string;
@@ -71,15 +73,7 @@ export default function DetailLocationScreen({ navigation }: any) {
                             source={{ uri: place.Image }}
                             style={{ width: "100%", height: "100%" }} />
                     </View>
-                    <Pressable style={[styles.roundButton, {
-                        position: 'absolute',
-                        left: 15,
-                        top: 15,
-                        zIndex: 1,
-                        backgroundColor: 'rgba(0,0,0,0.2)',
-                        borderRadius: 20,
-                        padding: 5
-                    }]}
+                    <Pressable style={styles.roundButton}
                         onPress={() => navigation.navigate("Main")}>
                         <Ionicons name="chevron-back" size={25}
                             color="white" />
@@ -176,52 +170,13 @@ export default function DetailLocationScreen({ navigation }: any) {
                             </Text>
 
                             <Text style={{ color: '#00B4D8', fontWeight: '600' }}
-                                onPress={() => alert('Chuyển hướng đến trang see all reviews')}>
+                                onPress={() => navigation.navigate("All Reviews")}>
                                 See All
                             </Text>
                         </View>
 
 
-                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
-                            {place.Reviews.flatMap(review => review.Pictures).map((picURL, index) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    onPress={() => handleOpenImage(picURL)}
-                                    activeOpacity={0.8}>
-                                    <View key={index}
-                                        style={[styles.imageFrame, { marginRight: 5, width: 150, height: 100, borderRadius: 10, borderWidth: 1 }]}>
-                                        <Image
-                                            source={{ uri: picURL }}
-                                            style={{ width: "100%", height: "100%" }}
-                                            resizeMode="cover" />
-                                    </View>
-                                </TouchableOpacity>
-
-                            ))}
-                        </ScrollView>
-                        {/* ---MODAL XEM ANH --- */}
-                        <Modal
-                            visible={modalVisible}
-                            transparent={true}
-                            onRequestClose={() => setModalVisible(false)}
-                            animationType="fade"
-                        >
-                            <View style={styles.modalContainer}>
-                                {/* Nút đóng */}
-                                <TouchableOpacity
-                                    style={styles.closeButton}
-                                    onPress={() => setModalVisible(false)} >
-                                    <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold' }}>✕</Text>
-                                </TouchableOpacity>
-                                {selectedImage && (
-                                    <Image
-                                        source={{ uri: selectedImage }}
-                                        style={styles.fullImage}
-                                        resizeMode="contain"
-                                    />
-                                )}
-                            </View>
-                        </Modal>
+                        <PicturesContainer pictures={place.Reviews[0].Pictures}></PicturesContainer>
 
                         <View style={[styles.detailCard, { flexDirection: 'column', margin: 0, marginTop: 30, padding: 10, rowGap: 10 }]}>
                             <View style={{ flexDirection: 'row' }}>
@@ -241,17 +196,7 @@ export default function DetailLocationScreen({ navigation }: any) {
                                 </View>
 
                             </View>
-                            <View style={{ flexDirection: 'row', marginLeft: 5 }}>
-                                {
-                                    [1, 2, 3, 4, 5].map((star) => (
-                                        <Ionicons
-                                            key={star}
-                                            name={star <= place.Reviews[0].Rate ? "star" : "star-outline"}
-                                            size={20}
-                                            color='#FFD700' />
-                                    ))}
-
-                            </View>
+                            <RatingStartBar ratingValue={place.Reviews[0].Rate} size={20}></RatingStartBar>
 
                             <Text style={{ marginLeft: 5 }}>
                                 {place.Reviews[0].Content}

@@ -1,7 +1,8 @@
-import styles from '@/app/(tabs)/AuthStyles';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { FlatList, Image, Pressable, Text, TextInput, View } from 'react-native';
+import styles from './HomeScreen.styles';
+import { colors } from "../common/colors";
 
 type Place = {
     Id: string;
@@ -123,34 +124,34 @@ const FestivalsList: Place[] = [
 const renderPlaceCard = (item: Place, navigation: any) => {
     //  const navigation = useNavigation<any>();
     return (
-        <View style={{ backgroundColor: '#FFFFFF', flexDirection: 'column', margin: 10, borderWidth: 1, borderRadius: 10, borderColor: '#EDF0F2', padding: 10 }}>
+        <View style={styles.card}>
             <View style={styles.imageFrame}>
                 <Image
                     source={{ uri: item.image }}
                     style={{ width: "100%", height: "100%" }} />
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
+            <View style={styles.contentContainer}>
                 <View style={{ flexDirection: 'column', flex: 1 }}>
                     <Text style={{ fontSize: 22, fontWeight: '600' }}>
                         {item.Name}
                     </Text>
-                    <Text style={{ color: '#353232da' }}>
+                    <Text style={{ color: colors.textSecondary }}>
                         {item.Located}
                     </Text>
                 </View>
-                <View style={{ flexDirection: 'row', borderWidth: 1, borderRadius: 10, borderColor: '#F0F3F5', padding: 5, columnGap: 5, backgroundColor: '#F0F3F5' }}>
+                <View style={styles.ratingBadge}>
                     <Text>
                         ⭐
                     </Text>
                     <Text style={{ fontWeight: '700' }}>
                         {item.Rate}
                     </Text>
-                    <Text style={{ fontWeight: '400', color: '#6B7280' }}>
+                    <Text style={{ fontWeight: '400', color: colors.textMuted }}>
                         ({item.NumberOfRate})
                     </Text>
                 </View>
             </View>
-            <View style={{ height: 1, backgroundColor: '#EDF0F2', width: '100%', marginVertical: 10 }} />
+            <View style={styles.TagContainer} />
 
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <View style={{ borderWidth: 1, borderColor: '#BFF0DB', backgroundColor: '#e5f6ef', padding: 5, borderRadius: 10 }}>
@@ -160,7 +161,7 @@ const renderPlaceCard = (item: Place, navigation: any) => {
                 </View>
 
                 <Pressable >
-                    <Text style={{ fontWeight: '600', color: '#00AEEF' }}
+                    <Text style={{ fontWeight: '600', color: colors.primary }}
                         onPress={() => navigation.navigate("Detail Location")}>
                         Details
                     </Text>
@@ -175,45 +176,43 @@ export default function HomeScreen({ navigation }: any) {
     const renderPlaceItem = ({ item }: { item: Place }) => renderPlaceCard(item, navigation);
 
     return (
-        <View style={{ flex: 1, justifyContent: 'center', marginTop: 40, backgroundColor: '#FFFFFF' }}>
+        <View style={[styles.background, { justifyContent: 'center', marginTop: 40}]}>
             <View style={styles.container}>
                 <View style={{ flexDirection: 'column' }}>
-                    <Text> Location</Text>
+                    <Text style={{color: colors.textSecondary}}> Location</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Ionicons name="location-sharp" size={18} color="#00B4D8" />
+                        <Ionicons name="location-sharp" size={18} color={colors.primary} />
                         <Text style={{ fontWeight: 'bold', fontSize: 20 }}> Near me</Text>
                         <Pressable
                             onPress={() => alert('pressed down')}>
                             <Ionicons
                                 name="chevron-down"
                                 size={20}
-                                color="#00B4D8"
+                                color={colors.primary}
                                 style={{ marginLeft: 2 }}
                             />
                         </Pressable>
 
                     </View>
-                    <View style={[styles.inputContainer, {
-                        margin: 0, borderWidth: 2, marginTop: 10, paddingHorizontal: 10
-                    }]}>
+                    <View style={styles.searchContainer}>
                         <TextInput placeholder="Where to next ?" style={{ flex: 1 }} />
                         <Ionicons name="search"
                             size={20}
-                            color="gray" />
+                            color={colors.textSecondary} />
                     </View>
                 </View>
 
                 <View style={{ flexDirection: 'row', columnGap: 10, marginHorizontal: 5 }}>
                     <Pressable
                         style={[styles.button, { flex: 1, height: 50, padding: 10 },
-                        { backgroundColor: activeCategory === 'Attractions' ? '#47CCF0' : '#E3F2FD' }
+                        { backgroundColor: activeCategory === 'Attractions' ? colors.primary : colors.primaryLight }
                         ]}
                         onPress={() => setActiveCategory('Attractions')}>
-                        <View style={styles.containerImageGG_Apple}>
+                        <View style={styles.containerCategoryButton}>
                             <Image source={require('../../../assets/images/camera-icon.png')}
                                 style={{ width: 25, height: 25, marginRight: 2 }}>
                             </Image>
-                            <Text style={[styles.buttonGG_AppleText, { color: 'black', fontSize: 15 }]}>
+                            <Text style={[styles.categoryButtonText, { color: 'black', fontSize: 15 }]}>
                                 Attractions
                             </Text>
                         </View>
@@ -221,14 +220,14 @@ export default function HomeScreen({ navigation }: any) {
 
                     <Pressable
                         style={[styles.button, { flex: 1, height: 50 },
-                        { backgroundColor: activeCategory === 'Dining' ? '#47CCF0' : '#E3F2FD' }
+                        { backgroundColor: activeCategory === 'Dining' ? colors.primary : colors.primaryLight }
                         ]}
                         onPress={() => setActiveCategory('Dining')}>
-                        <View style={styles.containerImageGG_Apple}>
+                        <View style={styles.containerCategoryButton}>
                             <Image source={require('../../../assets/images/dining-icon.png')}
                                 style={{ width: 25, height: 25, marginRight: 2 }}>
                             </Image>
-                            <Text style={[styles.buttonGG_AppleText, { color: 'black', fontSize: 15 }]}>
+                            <Text style={[styles.categoryButtonText, { color: 'black', fontSize: 15 }]}>
                                 Dining
                             </Text>
                         </View>
@@ -236,13 +235,13 @@ export default function HomeScreen({ navigation }: any) {
 
                     <Pressable
                         style={[styles.button, { flex: 1, height: 50 },
-                        { backgroundColor: activeCategory === 'Festivals' ? '#47CCF0' : '#E3F2FD' }]}
+                        { backgroundColor: activeCategory === 'Festivals' ? colors.primary : colors.primaryLight }]}
                         onPress={() => setActiveCategory('Festivals')}>
-                        <View style={styles.containerImageGG_Apple}>
+                        <View style={styles.containerCategoryButton}>
                             <Image source={require('../../../assets/images/festival-icon.png')}
                                 style={{ width: 25, height: 25, marginRight: 2 }}>
                             </Image>
-                            <Text style={[styles.buttonGG_AppleText, { color: 'black', fontSize: 15 }]}>
+                            <Text style={[styles.categoryButtonText, { color: 'black', fontSize: 15 }]}>
                                 Festivals
                             </Text>
                         </View>
@@ -252,14 +251,14 @@ export default function HomeScreen({ navigation }: any) {
                 <View
                     style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'center' }}>
                     <Pressable
-                        style={{ flex: 1, borderRadius: 8, borderWidth: 2, borderColor: '#69b3c8', padding: 10 }}
+                        style={{ flex: 1, borderRadius: 8, borderWidth: 2, borderColor: colors.primary, padding: 10 }}
                         onPress={() => alert('Plan with AI pressed')}>
-                        <View style={[styles.containerImageGG_Apple, { height: 40 }]}>
+                        <View style={[styles.containerCategoryButton, { height: 40 }]}>
                             <Image source={require('../../../assets/images/AIPlan-icon.png')}
                                 style={{ width: 25, height: 25, marginRight: 2 }}>
                             </Image>
                             <View style={{ flexDirection: 'column', flex: 1 }}>
-                                <Text style={[styles.buttonGG_AppleText, { flex: 1, fontSize: 15 }]}>
+                                <Text style={[styles.categoryButtonText, { flex: 1, fontSize: 15 }]}>
                                     Plan with AI
                                 </Text>
                                 <Text style={[styles.linkText, { fontSize: 12, color: 'gray' }]}>
@@ -267,18 +266,17 @@ export default function HomeScreen({ navigation }: any) {
                                 </Text>
                             </View>
                             <Image source={require('../../../assets/images/right-arrow-icon.png')}
-                                style={{ width: 25, height: 25, marginRight: 2, tintColor: '#47CCF0' }}>
+                                style={{ width: 25, height: 25, marginRight: 2, tintColor: colors.primary }}>
                             </Image>
                         </View>
                     </Pressable>
                 </View>
 
-                <View style={{ flexDirection: 'column', marginTop: 10, backgroundColor: '#F2F4F5', flex: 1, borderRadius: 15 }}>
+                <View style={styles.listWrapper}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
                         <Text style={{ flex: 1, fontWeight: '500', fontSize: 23 }}>
                             Popular this week
                         </Text>
-
                     </View>
 
                     <FlatList
