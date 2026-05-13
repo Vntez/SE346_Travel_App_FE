@@ -12,6 +12,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import AddLocationScreen from './screens/AddLocationScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -38,6 +39,15 @@ const MainTabs = () => {
             <Ionicons name="person" size={size} color={color} />
           ),
         }} />
+
+      <Tab.Screen name="AddNewPlace" component={AddLocationScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={color} />
+          ),
+        }} 
+        />
     </Tab.Navigator>
   );
 };
