@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import styles from './EditProfileScreen.styles';
-~
+
 export default function EditProfileScreen() {
     return (
         <View style={{ flex: 1, justifyContent:'center', marginTop: 0, backgroundColor: '#FFFFFF' }}>
