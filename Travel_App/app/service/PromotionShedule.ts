@@ -1,22 +1,22 @@
-
+import { Schedule } from '../(tabs)/types/promotion';
 export const getScheduleString = (schedule: Schedule): string => {
   const { startDate, endDate, days, startTime, endTime, specificTime } = schedule;
-  
+
   // Map chữ cái viết tắt sang tên đầy đủ (tùy chọn)
-  const dayMap: { [key: string]: string } = { 
-    'M': 'Mon', 
+  const dayMap: { [key: string]: string } = {
+    'M': 'Mon',
     'T': 'Tue',
-    'W': 'Wed', 
+    'W': 'Wed',
     'Th': 'Thu',
-    'F': 'Fri', 
+    'F': 'Fri',
     'Sa': 'Sat',
-    'S': 'Sun' 
+    'S': 'Sun'
   };
-  
+
   // Lưu ý: Trong logic thực tế, bạn cần phân biệt T (Tue/Thu) và S (Sat/Sun) 
   // bằng cách lưu Index (0-6) thay vì chữ cái nếu muốn chính xác tuyệt đối.
   const daysText = days.map(day => dayMap[day]).join(', ');
-  
+
   const timeText = specificTime ? `${startTime} - ${endTime}` : 'All day';
 
   return `Promotion valid from ${startDate} to ${endDate} on ${daysText} at ${timeText}`;

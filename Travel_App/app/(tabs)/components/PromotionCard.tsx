@@ -1,10 +1,10 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Ionicons } from "@expo/vector-icons";
-import { colors } from "../common/colors";
-import { styles } from "../screens/AdLocationScreen.style";
-import { type PromotionItem } from '../types/promotion';
 import { getScheduleString } from '@/app/service/PromotionShedule';
+import { Ionicons } from "@expo/vector-icons";
+import React from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
+import { colors } from "../common/colors";
+import { styles } from "../screens/AddLocationScreen.style";
+import { type PromotionItem } from '../types/promotion';
 
 interface PromotionProps {
   item: PromotionItem;
@@ -19,16 +19,16 @@ const PromotionCard: React.FC<PromotionProps> = ({ item, onToggle, onEdit, onDel
       <View style={{ flex: 1 }}>
         {/* Badge Trạng thái */}
         <View style={[
-          styles.promoBadge, 
+          styles.promoBadge,
           { backgroundColor: item.isActive ? colors.primaryLight : colors.background }
         ]}>
           <Text style={{ color: item.isActive ? colors.primaryDark : colors.textMuted, fontSize: 10, fontWeight: 'bold' }}>
             {item.isActive ? "Active" : "Inactive"}
           </Text>
         </View>
-        
+
         {/* Nội dung Promotion */}
-        <Text 
+        <Text
           numberOfLines={2} // Tránh text quá dài làm vỡ layout
           style={[
             { fontWeight: 'bold', fontSize: 14, marginTop: 4 },
@@ -37,7 +37,7 @@ const PromotionCard: React.FC<PromotionProps> = ({ item, onToggle, onEdit, onDel
         >
           {item.title}
         </Text>
-        
+
         <Text style={{ fontSize: 10, color: colors.textMuted, marginTop: 4 }}>
           {getScheduleString(item.schedule)}
         </Text>
@@ -45,14 +45,14 @@ const PromotionCard: React.FC<PromotionProps> = ({ item, onToggle, onEdit, onDel
 
       <View style={{ alignItems: 'flex-end', justifyContent: 'space-between', paddingLeft: 10 }}>
         {/* Toggle Switch */}
-        <TouchableOpacity 
+        <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => onToggle(item.id)}
           style={[
-            styles.toggleContainer, 
-            { 
+            styles.toggleContainer,
+            {
               backgroundColor: item.isActive ? colors.primary : colors.border,
-              alignItems: item.isActive ? 'flex-end' : 'flex-start' 
+              alignItems: item.isActive ? 'flex-end' : 'flex-start'
             }
           ]}
         >
@@ -64,7 +64,7 @@ const PromotionCard: React.FC<PromotionProps> = ({ item, onToggle, onEdit, onDel
           <TouchableOpacity onPress={onEdit} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <Ionicons name="pencil-outline" size={20} color={colors.textSecondary} style={{ marginRight: 15 }} />
           </TouchableOpacity>
-          
+
           <TouchableOpacity onPress={() => onDelete(item.id)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <Ionicons name="trash-outline" size={20} color={colors.danger} />
           </TouchableOpacity>

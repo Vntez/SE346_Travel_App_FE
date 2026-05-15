@@ -6,16 +6,17 @@ export const commonStyles = StyleSheet.create({
   background: {
     flex: 1,
     backgroundColor: colors.background,
+    marginTop: 40
   },
 
-overlay: {
+  overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: colors.overlay,
   },
 
   container: {
     flex: 1,
-    margin: 10,
+    margin: 6,
   },
 
   inputContainer: {
@@ -27,8 +28,8 @@ overlay: {
     borderRadius: 10,
     paddingHorizontal: 10,
     height: 50,
-    margin: 10,
-   },
+    margin: 10
+  },
 
   button: {
     backgroundColor: colors.primary,
@@ -49,6 +50,11 @@ overlay: {
     color: colors.textOnPrimary,
     fontSize: 18,
     fontWeight: 'bold',
+  },
+
+  roundButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   linkText: {

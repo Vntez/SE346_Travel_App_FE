@@ -28,7 +28,7 @@ const SimpleModal = ({ visible, onClose, title, children } : Props) => {
           {children}
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={onClose}>
+        <TouchableOpacity style={modalStyles.button} onPress={onClose}>
           <Text style={{ }}>Đóng</Text>
         </TouchableOpacity>
       </View>
@@ -65,6 +65,11 @@ const modalStyles = StyleSheet.create({
   },
   content: {
     marginBottom: 20,
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
   },
 });
 

@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
+//import * as ImagePicker from 'expo-image-picker';
+import { formatDate } from '@/app/service/PromotionShedule';
 import React, { useState } from 'react';
 import {
   Image,
@@ -15,26 +16,25 @@ import { PromotionData } from "../MOCK_DATA/promotion";
 import { colors } from '../common/colors';
 import PromotionCard from "../components/PromotionCard";
 import PromotionEditor from '../components/PromotionEditor';
-import { styles } from './AdLocationScreen.style';
-import { formatDate } from '@/app/service/PromotionShedule';
+import { styles } from './AddLocationScreen.style';
 
-const AddLocationScreen = () => {
+const AddLocationScreen = ({ navigation }: any) => {
   const [activeCategory, setActiveCategory] = useState('Restaurant');
   const [isAdding, setIsAdding] = useState(false);
   const [promotions, setPromotions] = useState(PromotionData);
   const [editingId, setEditingId] = useState<string | null>(null);
 
-   const [preview, setPreview] = useState<string>(''); // Lưu link để hiển thị tạm // data URL
+  const [preview, setPreview] = useState<string>(''); // Lưu link để hiển thị tạm // data URL
 
   const handleToggle = (id: string) => {
-    setPromotions(prevPromos => 
-      prevPromos.map(promo => 
-        promo.id === id 
-          ? { 
-              ...promo, 
-              isActive: !promo.isActive, 
-              status: !promo.isActive ? 'Active' : 'Inactive'
-            } 
+    setPromotions(prevPromos =>
+      prevPromos.map(promo =>
+        promo.id === id
+          ? {
+            ...promo,
+            isActive: !promo.isActive,
+            status: !promo.isActive ? 'Active' : 'Inactive'
+          }
           : promo
       )
     );
@@ -47,10 +47,10 @@ const AddLocationScreen = () => {
       setEditingId(null);
     } else {
       //Add
-      const newPromo = { 
-        id: Date.now().toString(), 
+      const newPromo = {
+        id: Date.now().toString(),
         ...newData,
-        isActive: true 
+        isActive: true
       };
       setPromotions([newPromo, ...promotions]);
       setIsAdding(false);
@@ -63,37 +63,35 @@ const AddLocationScreen = () => {
   };
 
 
- const handleImageChange = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
-    if (status !== 'granted') {
-      alert('Sorry, we need camera roll permissions to make this work!');
-      return;
-    }
-
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images, // Chỉ chọn ảnh
-      allowsEditing: true, // Cho phép crop/xoay
-      aspect: [16, 9], // Tỉ lệ khung hình (phù hợp cho panorama/cover)
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const uri = result.assets[0].uri;
-      setPreview(uri);
-      // Nếu bạn có state formData tổng:
-      // setFormData({ ...formData, image: uri }); 
-      console.log("Image URI:", uri);
-    }
-  };
+  /*const handleImageChange = async () => {
+     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+     
+     if (status !== 'granted') {
+       alert('Sorry, we need camera roll permissions to make this work!');
+       return;
+     }
+ 
+     let result = await ImagePicker.launchImageLibraryAsync({
+       mediaTypes: ImagePicker.MediaTypeOptions.Images, // Chỉ chọn ảnh
+       allowsEditing: true, // Cho phép crop/xoay
+       aspect: [16, 9], // Tỉ lệ khung hình (phù hợp cho panorama/cover)
+       quality: 1,
+     });
+ 
+     if (!result.canceled) {
+       const uri = result.assets[0].uri;
+       setPreview(uri);
+       console.log("Image URI:", uri);
+     }
+   };*/
 
   return (
     <SafeAreaView style={styles.background}>
       <StatusBar barStyle="dark-content" />
-      
+
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.popToTop()}>
           <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Add New Location</Text>
@@ -103,7 +101,7 @@ const AddLocationScreen = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        
+
         {/* Policy Reminder */}
         <View style={styles.alertContainer}>
           <Ionicons name="warning" size={20} color={colors.warning} style={{ marginRight: 8 }} />
@@ -119,8 +117,8 @@ const AddLocationScreen = () => {
         <Text style={styles.sectionTitle}>Basic Information</Text>
         <View style={styles.card}>
           <Text style={styles.label}>Place Name</Text>
-          <TextInput 
-            style={styles.input} 
+          <TextInput
+            style={styles.input}
             placeholder="e.g. The Grand View Hotel"
             placeholderTextColor={colors.textMuted}
           />
@@ -128,7 +126,7 @@ const AddLocationScreen = () => {
           <Text style={styles.label}>Category</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipScroll}>
             {['Restaurant', 'Hotel', 'Attraction', 'Cafe'].map((cat) => (
-              <TouchableOpacity 
+              <TouchableOpacity
                 key={cat}
                 onPress={() => setActiveCategory(cat)}
                 style={[styles.chip, activeCategory === cat && styles.chipActive]}
@@ -141,8 +139,8 @@ const AddLocationScreen = () => {
           </ScrollView>
 
           <Text style={styles.label}>Description</Text>
-          <TextInput 
-            style={[styles.input, styles.textArea]} 
+          <TextInput
+            style={[styles.input, styles.textArea]}
             placeholder="Tell visitors what makes this place special..."
             placeholderTextColor={colors.textMuted}
             multiline
@@ -155,9 +153,9 @@ const AddLocationScreen = () => {
         <View style={styles.card}>
           <Text style={styles.label}>Pin Location</Text>
           <View style={styles.mapContainer}>
-            <Image 
-              source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCT5oVzTfOwQWzcT6Atu7B0q--_Q46lzBnpoi5Ynl6t-jFeH_G0ddDJ2l3wkMx7ijFvl1pBfPloXeD3wytn487HTubcPPtWVbVWWuQ-2D9jjeeXK0dKYbyaevqcVY7kQUnaehCgek8p8BWfaGgYFfvwLvOEB5QeGLNemG6C-1uF3R7ApCE7cnP24Sdeb1Q34QTWc8DYR62RqIUpy6JVYpaFRVghXmCEopKS14rWn3x7KPZxnFl9mhPa4lCdGMLvf7rM3vlasLaSoo_c' }} 
-              style={styles.mapImage} 
+            <Image
+              source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCT5oVzTfOwQWzcT6Atu7B0q--_Q46lzBnpoi5Ynl6t-jFeH_G0ddDJ2l3wkMx7ijFvl1pBfPloXeD3wytn487HTubcPPtWVbVWWuQ-2D9jjeeXK0dKYbyaevqcVY7kQUnaehCgek8p8BWfaGgYFfvwLvOEB5QeGLNemG6C-1uF3R7ApCE7cnP24Sdeb1Q34QTWc8DYR62RqIUpy6JVYpaFRVghXmCEopKS14rWn3x7KPZxnFl9mhPa4lCdGMLvf7rM3vlasLaSoo_c' }}
+              style={styles.mapImage}
             />
             <TouchableOpacity style={styles.setPinButton}>
               <Ionicons name="location" size={18} color={colors.primary} />
@@ -172,9 +170,9 @@ const AddLocationScreen = () => {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.uploadBox, { marginTop: 20 }]}
-            onPress={() => handleImageChange()}
+          // onPress={() => handleImageChange()}
           >
             <View style={{ backgroundColor: colors.primaryLight, padding: 10, borderRadius: 30, marginBottom: 8 }}>
               <Ionicons name="cloud-upload" size={24} color={colors.primary} />
@@ -196,25 +194,25 @@ const AddLocationScreen = () => {
         {/* Danh sách Promotions */}
         {promotions.map((item) => (
           editingId === item.id ? (
-            <PromotionEditor 
+            <PromotionEditor
               key={item.id}
               initialData={item}
               onSave={(data) => handleSave(item.id, data)}
               onCancel={() => setEditingId(null)}
             />
           ) : (
-            <PromotionCard 
-              key={item.id} 
-              item={item} 
+            <PromotionCard
+              key={item.id}
+              item={item}
               onToggle={handleToggle}
-              onEdit={() => {setEditingId(item.id); setIsAdding(false);}} // Truyền thêm prop onEdit vào PromotionCard
+              onEdit={() => { setEditingId(item.id); setIsAdding(false); }}
               onDelete={() => handleDelete(item.id)}
             />
           )
         ))}
 
         {/* Seasonal CTA */}
-        {!isAdding &&<View style={[styles.uploadBox, { padding: 16, borderStyle: 'dashed' }]}>
+        {!isAdding && <View style={[styles.uploadBox, { padding: 16, borderStyle: 'dashed' }]}>
           <Text style={{ fontSize: 12, color: colors.textSecondary }}>Want to boost visitors?</Text>
           <TouchableOpacity onPress={() => {
             setIsAdding(true);
@@ -227,9 +225,9 @@ const AddLocationScreen = () => {
 
         {/* 3. Hiển thị việc tạo mới nếu isAdding = true */}
         {isAdding && (
-          <View style={{}}>
-            <PromotionEditor 
-              initialData={{ 
+          <View>
+            <PromotionEditor
+              initialData={{
                 title: '',
                 schedule: {
                   startDate: formatDate(new Date()),

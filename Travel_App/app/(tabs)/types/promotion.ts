@@ -13,4 +13,3 @@ export interface PromotionItem {
   isActive: boolean;
   schedule: Schedule;   // Chứa toàn bộ thông tin thời gian
 }
-

@@ -1,8 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { FlatList, Image, Pressable, Text, TextInput, View } from 'react-native';
-import styles from './HomeScreen.styles';
 import { colors } from "../common/colors";
+import styles from './HomeScreen.styles';
 
 type Place = {
     Id: string;
@@ -121,6 +121,7 @@ const FestivalsList: Place[] = [
     },
 ]
 
+
 const renderPlaceCard = (item: Place, navigation: any) => {
     //  const navigation = useNavigation<any>();
     return (
@@ -170,16 +171,15 @@ const renderPlaceCard = (item: Place, navigation: any) => {
         </View>
     );
 };
-
 export default function HomeScreen({ navigation }: any) {
-    const [activeCategory, setActiveCategory] = useState('Attractions');
     const renderPlaceItem = ({ item }: { item: Place }) => renderPlaceCard(item, navigation);
+    const [activeCategory, setActiveCategory] = useState('Attractions');
 
-    return (
-        <View style={[styles.background, { justifyContent: 'center', marginTop: 40}]}>
+    const renderHeader = () => {
+        return (
             <View style={styles.container}>
                 <View style={{ flexDirection: 'column' }}>
-                    <Text style={{color: colors.textSecondary}}> Location</Text>
+                    <Text style={{ color: colors.textSecondary }}> Location</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Ionicons name="location-sharp" size={18} color={colors.primary} />
                         <Text style={{ fontWeight: 'bold', fontSize: 20 }}> Near me</Text>
@@ -192,7 +192,6 @@ export default function HomeScreen({ navigation }: any) {
                                 style={{ marginLeft: 2 }}
                             />
                         </Pressable>
-
                     </View>
                     <View style={styles.searchContainer}>
                         <TextInput placeholder="Where to next ?" style={{ flex: 1 }} />
@@ -247,7 +246,6 @@ export default function HomeScreen({ navigation }: any) {
                         </View>
                     </Pressable>
                 </View>
-
                 <View
                     style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'center' }}>
                     <Pressable
@@ -271,24 +269,24 @@ export default function HomeScreen({ navigation }: any) {
                         </View>
                     </Pressable>
                 </View>
-
-                <View style={styles.listWrapper}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
-                        <Text style={{ flex: 1, fontWeight: '500', fontSize: 23 }}>
-                            Popular this week
-                        </Text>
-                    </View>
-
-                    <FlatList
-                        data={activeCategory === 'Attractions'
-                            ? AttractionsList
-                            : activeCategory === 'Dining'
-                                ? DiningList
-                                : FestivalsList}
-                        keyExtractor={(item) => item.Id}
-                        renderItem={renderPlaceItem} />
+                <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
+                    <Text style={{ flex: 1, fontWeight: '500', fontSize: 23 }}>
+                        Popular this week
+                    </Text>
                 </View>
-
+            </View>
+        )
+    }
+    return (
+        <View style={[styles.background, { justifyContent: 'center', marginTop: 35 }]}>
+            <View style={styles.container}>
+                <FlatList
+                    data={activeCategory === 'Attractions' ? AttractionsList : DiningList}
+                    renderItem={renderPlaceItem}
+                    keyExtractor={(item) => item.Id}
+                    ListHeaderComponent={renderHeader}
+                    showsVerticalScrollIndicator={false}
+                />
             </View>
         </View >
     )
