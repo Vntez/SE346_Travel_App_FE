@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import styles from '@/app/(tabs)/AuthStyles';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import React from 'react';
+import { Image, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import styles from './EditProfileScreen.styles';
 
 export default function EditProfileScreen() {
     return (

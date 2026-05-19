@@ -1,4 +1,4 @@
-import styles from '@/app/(tabs)/AuthStyles';
+import styles from './LoginScreen.styles';
 import React, { useState } from 'react';
 import {
     Image,
@@ -6,7 +6,7 @@ import {
     Pressable,
     ScrollView,
     Text,
-    TextInput,
+    TextInput, 
     TouchableOpacity,
     View
 } from 'react-native';

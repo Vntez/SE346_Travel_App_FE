@@ -1,4 +1,4 @@
-import styles from '@/app/(tabs)/AuthStyles';
+import styles from './DetailLocationScreen.styles';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Image, Modal, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
@@ -73,15 +73,7 @@ export default function DetailLocationScreen({ navigation }: any) {
                             source={{ uri: place.Image }}
                             style={{ width: "100%", height: "100%" }} />
                     </View>
-                    <Pressable style={[styles.roundButton, {
-                        position: 'absolute',
-                        left: 15,
-                        top: 15,
-                        zIndex: 1,
-                        backgroundColor: 'rgba(0,0,0,0.2)',
-                        borderRadius: 20,
-                        padding: 5
-                    }]}
+                    <Pressable style={styles.roundButton}
                         onPress={() => navigation.navigate("Main")}>
                         <Ionicons name="chevron-back" size={25}
                             color="white" />

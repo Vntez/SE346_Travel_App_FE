@@ -1,11 +1,12 @@
 import { Checkbox } from 'expo-checkbox';
 import React, { useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import styles from '../AuthStyles';
+import styles from './RegisterScreen.styles';
 
 export default function RegisterScreen({ navigation }: any) {
     const [isPasswordVisible, setPasswordVisible] = useState(false);
     const [isCfPasswordVisible, setCfPasswordVisible] = useState(false);
+    const [isChecked, setChecked] = useState(false);
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', marginTop: 40 }}>
@@ -86,9 +87,9 @@ export default function RegisterScreen({ navigation }: any) {
                 <View style={{ flexDirection: 'row', marginLeft: 10, marginTop: 10 }}>
                     <Checkbox
                         style={styles.checkbox}
-                    //  value={isChecked}
-                    //  onValueChange={setChecked}
-                    // color={isChecked ? '#4630EB' : undefined} // Màu khi tích vào
+                        value={isChecked}
+                        onValueChange={setChecked}
+                        color={isChecked ? '#4630EB' : undefined} // Màu khi tích vào
                     />
                     <Text>
                         I agree to the{' '}
@@ -115,9 +116,11 @@ export default function RegisterScreen({ navigation }: any) {
                 </View>
 
                 <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                    <View style={styles.line} />
                     <Text style={[styles.text, { marginVertical: 10 }]}>
                         Or sign up with
                     </Text>
+                    <View style={styles.line} />
                     <View style={styles.containerGG_Apple}>
                         <Pressable
                             style={styles.buttonGG_Apple}

@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { MAIN_COLOR } from '../AuthStyles';
+import { colors } from '../common/colors';
 
-const BAR_COLOR = '#E0F0F7'; // Màu xanh nhạt cho nền thanh
+const BAR_COLOR = '#E0F0F7';
 
 export const RatingStartBar = ({ ratingValue, size }: { ratingValue: number; size: number }) => {
   return (
@@ -11,8 +11,6 @@ export const RatingStartBar = ({ ratingValue, size }: { ratingValue: number; siz
       {[1, 2, 3, 4, 5].map((star) => {
         let iconName: any = "star-outline";
 
-        // 0.8 - 1.0 : 1 sao
-        // 0.4 - 0.7 : nửa sao
         if (ratingValue >= star - 0.2) {
           iconName = "star";
         } else if (ratingValue >= star - 0.6) {
@@ -40,11 +38,11 @@ export const RatingBar = ({ stars, percentage }: { stars: number, percentage: nu
       </View>
 
       <View style={ratingBarStyles.progressTrack}>
-        <View 
+        <View
           style={[
-            ratingBarStyles.progressFilled, 
-            { width: `${percentage}%` } // Chiều rộng tương ứng %
-          ]} 
+            ratingBarStyles.progressFilled,
+            { width: `${percentage}%` }
+          ]}
         />
       </View>
 
@@ -58,19 +56,18 @@ export const RatingBar = ({ stars, percentage }: { stars: number, percentage: nu
 export const ratingBarStyles = StyleSheet.create({
   mainContainer: {
     width: '90%',
-    padding: 20, // Tạo khoảng cách lề trong
-    //backgroundColor: '#fff',
-    borderRadius: 20, // Bo tròn các góc lớn bên ngoài (theo hình ảnh)
-    shadowColor: '#000', // Đổ bóng nhẹ cho chuyên nghiệp
+    padding: 20,
+    borderRadius: 20,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 5,
-    elevation: 3, // Cho Android
+    elevation: 3,
   },
   barRowContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 2, // Khoảng cách giữa các thanh
+    marginVertical: 2,
   },
   starContainer: {
     width: 20,
@@ -80,53 +77,49 @@ export const ratingBarStyles = StyleSheet.create({
   starText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: BAR_COLOR, // Số sao bên trái màu đen
+    color: BAR_COLOR,
   },
   progressTrack: {
-    flex: 1, // Để thanh chiếm hết không gian còn lại ở giữa
+    flex: 1,
     height: 12,
     backgroundColor: BAR_COLOR,
     borderRadius: 6,
-    overflow: 'hidden', // Quan trọng: để phần filled không tràn ra lề bo tròn
+    overflow: 'hidden',
     marginRight: 15,
   },
   progressFilled: {
     height: '100%',
-    backgroundColor: MAIN_COLOR,
+    backgroundColor: colors.primary,
     borderRadius: 6,
   },
   percentageContainer: {
-    width: 25, // Giới hạn chiều rộng cố định để các số % căn thẳng hàng
+    width: 25,
     alignItems: 'flex-end',
   },
   percentageText: {
     fontSize: 14,
-    color: BAR_COLOR, // Phần trăm bên phải màu đen
+    color: BAR_COLOR,
   },
 });
 
 export const calculateRatingStats = (data: any[]) => {
   const totalReviews = data.length;
-  
-  // Bước 1: Khởi tạo bộ đếm cho từng mức sao từ 1 đến 5
+
   const counts: { [key: number]: number } = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 
-  // Bước 2: Duyệt qua dữ liệu và đếm
   data.forEach(item => {
     if (counts[item.Rate] !== undefined) {
-        counts[item.Rate]++;
+      counts[item.Rate]++;
     }
   });
 
-  // Bước 3: Chuyển đổi thành mảng phần trăm theo thứ tự từ 5 sao -> 1 sao
   const stats = [5, 4, 3, 2, 1].map(star => {
     const count = counts[star];
     const percentage = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
-    
+
     return {
       stars: star,
-      // Math.round để ra con số nguyên đẹp cho thanh tiến trình
-      percentage: Math.round(percentage) 
+      percentage: Math.round(percentage)
     };
   });
 

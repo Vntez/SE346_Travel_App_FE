@@ -9,12 +9,14 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
+
     container: {
         margin: 10,
         flex: 1,
         //  justifyContent: 'center',
         //backgroundColor: 'pink'
     },
+    
     overlay: {
         ...StyleSheet.absoluteFillObject, // absolute, top/right/bottom/left = 0
         backgroundColor: 'rgba(0, 0, 0, 0.5)', // Màu đen với độ trong suốt 50%

@@ -1,35 +1,32 @@
 import React, { ReactNode } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import styles from '../AuthStyles';
 
 interface Props {
   visible: boolean;
   onClose: () => void;
-  title?: string; // Dấu ? nghĩa là không bắt buộc phải có
-  children: ReactNode; // Cho phép truyền Text, View hoặc bất cứ gì vào giữa thẻ
+  title?: string;
+  children: ReactNode;
 }
 
-const SimpleModal = ({ visible, onClose, title, children } : Props) => {
+const SimpleModal = ({ visible, onClose, title, children }: Props) => {
   if (!visible) return null;
 
   return (
     <View style={modalStyles.container}>
-      {/* Lớp nền mờ */}
-      <TouchableOpacity 
-        style={modalStyles.overlay} 
-        activeOpacity={1} 
-        onPress={onClose} 
+      <TouchableOpacity
+        style={modalStyles.overlay}
+        activeOpacity={1}
+        onPress={onClose}
       />
 
-      {/* Nội dung Modal */}
       <View style={modalStyles.modalBox}>
         <Text style={modalStyles.title}>{title}</Text>
-        
+
         <View style={modalStyles.content}>
           {children}
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={onClose}>
+        <TouchableOpacity style={modalStyles.button} onPress={onClose}>
           <Text style={{ }}>Đóng</Text>
         </TouchableOpacity>
       </View>
@@ -53,8 +50,8 @@ const modalStyles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
-    elevation: 5, // Đổ bóng cho Android
-    shadowColor: '#000', // Đổ bóng cho iOS
+    elevation: 5,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
   },
@@ -66,6 +63,11 @@ const modalStyles = StyleSheet.create({
   },
   content: {
     marginBottom: 20,
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
   },
 });
 
