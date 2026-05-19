@@ -1,12 +1,48 @@
 import { Checkbox } from 'expo-checkbox';
 import React, { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import styles from './RegisterScreen.styles';
+import { useAuth, getApiErrorMessage } from '../context/AuthContext';
 
 export default function RegisterScreen({ navigation }: any) {
     const [isPasswordVisible, setPasswordVisible] = useState(false);
     const [isCfPasswordVisible, setCfPasswordVisible] = useState(false);
     const [isChecked, setChecked] = useState(false);
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [submitting, setSubmitting] = useState(false);
+    const { register } = useAuth();
+
+    const handleRegister = async () => {
+        if (!isChecked) {
+            Alert.alert('Loi', 'Vui long dong y dieu khoan su dung');
+            return;
+        }
+        if (!email.trim() || !password) {
+            Alert.alert('Loi', 'Vui long nhap email va mat khau');
+            return;
+        }
+        if (password.length < 8) {
+            Alert.alert('Loi', 'Mat khau phai co it nhat 8 ky tu');
+            return;
+        }
+        if (password !== confirmPassword) {
+            Alert.alert('Loi', 'Mat khau xac nhan khong khop');
+            return;
+        }
+        setSubmitting(true);
+        try {
+            await register(email.trim(), password, fullName.trim() || undefined);
+        } catch (err) {
+            const msg = getApiErrorMessage(err);
+            const text = msg === 'EMAIL_TAKEN' ? 'Email da duoc su dung' : msg;
+            Alert.alert('Dang ky that bai', text);
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', marginTop: 40 }}>
@@ -32,7 +68,7 @@ export default function RegisterScreen({ navigation }: any) {
                         source={require('../../../assets/images/user-icon.png')}
                         style={{ width: 20, height: 20, marginRight: 2 }}
                     />
-                    <TextInput placeholder="Full Name" style={{ flex: 1 }} />
+                    <TextInput placeholder="Full Name" style={{ flex: 1 }} value={fullName} onChangeText={setFullName} />
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -40,7 +76,7 @@ export default function RegisterScreen({ navigation }: any) {
                         source={require('../../../assets/images/email-icon.png')}
                         style={{ width: 20, height: 20, marginRight: 2 }}
                     />
-                    <TextInput placeholder="Email Address" style={{ flex: 1 }} />
+                    <TextInput placeholder="Email Address" style={{ flex: 1 }} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
                 </View>
                 <View style={styles.inputContainer}>
                     <Image
@@ -52,7 +88,9 @@ export default function RegisterScreen({ navigation }: any) {
                         style={{ flex: 1 }}
                         keyboardType='default'
                         autoCorrect={false}
-                        autoCapitalize="none" />
+                        autoCapitalize="none"
+                        value={password}
+                        onChangeText={setPassword} />
                     <TouchableOpacity
                         onPress={() => setPasswordVisible(!isPasswordVisible)} >
                         <Image
@@ -71,8 +109,10 @@ export default function RegisterScreen({ navigation }: any) {
                         style={{ width: 20, height: 20, marginRight: 2 }}
                     />
                     <TextInput placeholder="Confirm Password"
-                        secureTextEntry={true}
-                        style={{ flex: 1 }} />
+                        secureTextEntry={!isCfPasswordVisible}
+                        style={{ flex: 1 }}
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword} />
                     <TouchableOpacity
                         onPress={() => setCfPasswordVisible(!isCfPasswordVisible)} >
                         <Image
@@ -108,10 +148,15 @@ export default function RegisterScreen({ navigation }: any) {
                 }} >
                     <Pressable
                         style={styles.button}
-                        onPress={() => alert('Register')}>
-                        <Text style={styles.buttonText}>
-                            Create Account
-                        </Text>
+                        onPress={handleRegister}
+                        disabled={submitting}>
+                        {submitting ? (
+                            <ActivityIndicator color="#fff" />
+                        ) : (
+                            <Text style={styles.buttonText}>
+                                Create Account
+                            </Text>
+                        )}
                     </Pressable>
                 </View>
 
