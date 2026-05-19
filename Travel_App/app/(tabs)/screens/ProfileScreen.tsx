@@ -2,8 +2,16 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import styles from './ProfileScreen.styles';
+import { useAuth } from '../context/AuthContext';
+
+const DEFAULT_AVATAR =
+  'https://th.bing.com/th/id/OIP.iY6OLSZImubhw9Yiwg6OuAHaHa?w=186&h=186&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3';
 
 export default function ProfileScreen({ navigation }: any) {
+  const { user } = useAuth();
+  const displayName = user?.fullName || user?.name || 'User';
+  const avatar = user?.avatarUrl || DEFAULT_AVATAR;
+
   return (
     <View style={{ flex: 1, marginTop: 40, backgroundColor: '#ffff' }}>
       <View style={[styles.container, { marginTop: 20 }]}>
@@ -11,7 +19,7 @@ export default function ProfileScreen({ navigation }: any) {
           <View style={styles.avatarContainer}>
             <View style={styles.avatarBorder}>
               <Image
-                source={{ uri: 'https://th.bing.com/th/id/OIP.iY6OLSZImubhw9Yiwg6OuAHaHa?w=186&h=186&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3' }}
+                source={{ uri: avatar }}
                 style={{ width: '100%', height: '100%' }}
               />
             </View>
@@ -25,8 +33,11 @@ export default function ProfileScreen({ navigation }: any) {
           </View>
 
           <Text style={{ fontSize: 30, fontWeight: 'bold' }}>
-            Alex Johnson
+            {displayName}
           </Text>
+          {user?.username ? (
+            <Text style={{ color: '#928d8d', fontSize: 16, marginTop: 4 }}>@{user.username}</Text>
+          ) : null}
         </View>
 
         <View style={styles.profileMenuContainer}>
@@ -84,21 +95,25 @@ export default function ProfileScreen({ navigation }: any) {
                 Settings
               </Text>
               <Text style={{ color: '#928d8d', fontSize: 15 }}>
-                Account and app preferences
+                App preferences
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#cbc8c8" />
           </TouchableOpacity>
 
           <TouchableOpacity style={[styles.profileMenuItemContainer]} onPress={() => navigation.navigate('Log Out')}>
-            <View style={[styles.profileMenuItemIcon, { backgroundColor: '#ffff' }]}>
-              <Ionicons name="log-out" size={30} color="#eb2727" />
+            <View style={[styles.profileMenuItemIcon, { backgroundColor: '#f5d0d0' }]}>
+              <Ionicons name="log-out-outline" size={30} color="#da2c2c" />
             </View>
             <View style={styles.profileMenuTextContainer}>
               <Text style={{ fontWeight: 'bold', fontSize: 20 }}>
                 Log Out
               </Text>
+              <Text style={{ color: '#928d8d', fontSize: 15 }}>
+                Sign out of your account
+              </Text>
             </View>
+            <Ionicons name="chevron-forward" size={20} color="#cbc8c8" />
           </TouchableOpacity>
         </View>
       </View>

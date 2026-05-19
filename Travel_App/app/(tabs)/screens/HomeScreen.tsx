@@ -1,127 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { FlatList, Image, Pressable, Text, TextInput, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, FlatList, Image, Pressable, Text, TextInput, View } from 'react-native';
 import { colors } from "../common/colors";
 import styles from './HomeScreen.styles';
+import { fetchPlaces } from '../../../lib/api/places';
+import { planTrip } from '../../../lib/api/ai';
+import type { PlaceListItem } from '../../../lib/api/types';
+import { getApiErrorMessage } from '../context/AuthContext';
 
-
-type Place = {
-    Id: string;
-    Name: string;
-    Located: string;
-    Rate: number;
-    NumberOfRate: number;
-    Features: string;
-    image: string;
-}
-const AttractionsList: Place[] = [
-    {
-        Id: "1",
-        Name: "Gion District",
-        Located: "Kyoto, Japan ",
-        Rate: 4.9,
-        NumberOfRate: 850,
-        Features: "Quiet Now",
-        image: "https://i.pinimg.com/1200x/f1/9c/a0/f19ca09250c88864491e7cacecd1eb40.jpg"
-    },
-    {
-        Id: "2",
-        Name: "Gion District",
-        Located: "Kyoto, Japan ",
-        Rate: 4.9,
-        NumberOfRate: 850,
-        Features: "Quiet Now",
-        image: "https://i.pinimg.com/1200x/28/31/da/2831da0f8a4b18fde25867ef90e66207.jpg"
-    },
-    {
-        Id: "3",
-        Name: "Gion District",
-        Located: "Kyoto, Japan ",
-        Rate: 4.9,
-        NumberOfRate: 850,
-        Features: "Quiet Now",
-        image: "https://i.pinimg.com/1200x/28/31/da/2831da0f8a4b18fde25867ef90e66207.jpg"
-    },
-    {
-        Id: "4",
-        Name: "Gion District",
-        Located: "Kyoto, Japan ",
-        Rate: 4.9,
-        NumberOfRate: 850,
-        Features: "Quiet Now",
-        image: "https://i.pinimg.com/1200x/28/31/da/2831da0f8a4b18fde25867ef90e66207.jpg"
-    },
-    {
-        Id: "5",
-        Name: "Gion District",
-        Located: "Kyoto, Japan ",
-        Rate: 4.9,
-        NumberOfRate: 850,
-        Features: "Quiet Now",
-        image: "https://i.pinimg.com/1200x/28/31/da/2831da0f8a4b18fde25867ef90e66207.jpg"
-    },
-]
-
-const DiningList: Place[] = [
-    {
-        Id: "1",
-        Name: "Happy Restaurant",
-        Located: "Tokyo, Japan ",
-        Rate: 4.9,
-        NumberOfRate: 850,
-        Features: "Delicious",
-        image: "https://i.pinimg.com/1200x/c5/c6/5f/c5c65fb0db0b42f2f1ca173b8fd38c56.jpg"
-    },
-    {
-        Id: "2",
-        Name: "Nicho Cafe",
-        Located: "Seoul, Korea",
-        Rate: 4.9,
-        NumberOfRate: 120,
-        Features: "Busy Now",
-        image: "https://i.pinimg.com/736x/57/ac/d3/57acd3076ae2459723b90e1afbd8a5c0.jpg"
-    },
-    {
-        Id: "3",
-        Name: "Lile Bistro",
-        Located: "Busan, Korea",
-        Rate: 3.9,
-        NumberOfRate: 50,
-        Features: "Quiet Now",
-        image: "https://i.pinimg.com/1200x/fa/0d/3d/fa0d3d02eb1a1d1e502351c280d76d81.jpg"
-    },
-]
-
-const FestivalsList: Place[] = [
-    {
-        Id: "1",
-        Name: "Cosplay Festival",
-        Located: "Osaka, Japan ",
-        Rate: 4.4,
-        NumberOfRate: 1150,
-        Features: "Happy",
-        image: "https://i.pinimg.com/736x/e1/92/d8/e192d890ee057cf5accf14f7f6769ef2.jpg"
-    },
-    {
-        Id: "2",
-        Name: "Youth Festival",
-        Located: "Kyoto, Japan",
-        Rate: 4.1,
-        NumberOfRate: 230,
-        Features: "Busy Now",
-        image: "https://i.pinimg.com/736x/0c/93/be/0c93be2773f8dcd49345e848e623724b.jpg"
-    },
-    {
-        Id: "3",
-        Name: "BlackPink Concert",
-        Located: "Tokyo, Japan",
-        Rate: 5.0,
-        NumberOfRate: 8816,
-        Features: "Really Crowded",
-        image: "https://i.pinimg.com/1200x/43/42/ef/4342ef8c74138f70706cf3324a47066f.jpg"
-    },
-]
-
+type Place = PlaceListItem;
 
 const renderPlaceCard = (item: Place, navigation: any) => {
     //  const navigation = useNavigation<any>();
@@ -162,7 +49,7 @@ const renderPlaceCard = (item: Place, navigation: any) => {
                     </Text>
                 </View>
 
-                <Pressable onPress={() => navigation.navigate("Detail Location")}>
+                <Pressable onPress={() => navigation.navigate("Detail Location", { placeId: item.Id })}>
                     <Text style={{ fontWeight: '600', color: colors.primary }}>
                         Details
                     </Text>
@@ -174,6 +61,42 @@ const renderPlaceCard = (item: Place, navigation: any) => {
 export default function HomeScreen({ navigation }: any) {
     const renderPlaceItem = ({ item }: { item: Place }) => renderPlaceCard(item, navigation);
     const [activeCategory, setActiveCategory] = useState('Attractions');
+    const [places, setPlaces] = useState<Place[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [aiLoading, setAiLoading] = useState(false);
+
+    const loadPlaces = useCallback(async () => {
+        setLoading(true);
+        try {
+            const data = await fetchPlaces(activeCategory);
+            setPlaces(data);
+        } catch {
+            setPlaces([]);
+        } finally {
+            setLoading(false);
+        }
+    }, [activeCategory]);
+
+    useEffect(() => {
+        loadPlaces();
+    }, [loadPlaces]);
+
+    const handlePlanWithAi = async () => {
+        const q = searchQuery.trim() || 'weekend trip';
+        setAiLoading(true);
+        try {
+            const plan = await planTrip(q, 'Near me');
+            const body = plan.suggestions
+                .map((s, i) => `${i + 1}. ${s.title}\n${s.description}`)
+                .join('\n\n');
+            Alert.alert('Goi y chuyen di', `${body}\n\n${plan.note}`);
+        } catch (err) {
+            Alert.alert('Loi', getApiErrorMessage(err));
+        } finally {
+            setAiLoading(false);
+        }
+    };
 
     const renderHeader = () => {
         return (
@@ -194,7 +117,12 @@ export default function HomeScreen({ navigation }: any) {
                         </Pressable>
                     </View>
                     <View style={styles.searchContainer}>
-                        <TextInput placeholder="Where to next ?" style={{ flex: 1 }} />
+                        <TextInput
+                            placeholder="Where to next ?"
+                            style={{ flex: 1 }}
+                            value={searchQuery}
+                            onChangeText={setSearchQuery}
+                        />
                         <Ionicons name="search"
                             size={20}
                             color={colors.textSecondary} />
@@ -250,14 +178,15 @@ export default function HomeScreen({ navigation }: any) {
                     style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'center' }}>
                     <Pressable
                         style={{ flex: 1, borderRadius: 8, borderWidth: 2, borderColor: colors.primary, padding: 10 }}
-                        onPress={() => alert('Plan with AI pressed')}>
+                        onPress={handlePlanWithAi}
+                        disabled={aiLoading}>
                         <View style={[styles.containerCategoryButton, { height: 40 }]}>
                             <Image source={require('../../../assets/images/AIPlan-icon.png')}
                                 style={{ width: 25, height: 25, marginRight: 2 }}>
                             </Image>
                             <View style={{ flexDirection: 'column', flex: 1 }}>
                                 <Text style={[styles.categoryButtonText, { flex: 1, fontSize: 15 }]}>
-                                    Plan with AI
+                                    {aiLoading ? 'Planning...' : 'Plan with AI'}
                                 </Text>
                                 <Text style={[styles.linkText, { fontSize: 12, color: 'gray' }]}>
                                     Get personalized trip ideas
@@ -277,15 +206,30 @@ export default function HomeScreen({ navigation }: any) {
             </View>
         )
     }
+    if (loading && places.length === 0) {
+        return (
+            <View style={[styles.background, { justifyContent: 'center', alignItems: 'center', marginTop: 35 }]}>
+                <ActivityIndicator size="large" color={colors.primary} />
+            </View>
+        );
+    }
+
     return (
         <View style={[styles.background, { justifyContent: 'center', marginTop: 35 }]}>
             <View style={styles.container}>
                 <FlatList
-                    data={activeCategory === 'Attractions' ? AttractionsList : DiningList}
+                    data={places}
                     renderItem={renderPlaceItem}
                     keyExtractor={(item) => item.Id}
                     ListHeaderComponent={renderHeader}
                     showsVerticalScrollIndicator={false}
+                    refreshing={loading}
+                    onRefresh={loadPlaces}
+                    ListEmptyComponent={
+                        <Text style={{ textAlign: 'center', marginTop: 20, color: colors.textSecondary }}>
+                            Khong co dia diem nao
+                        </Text>
+                    }
                 />
             </View>
         </View >
