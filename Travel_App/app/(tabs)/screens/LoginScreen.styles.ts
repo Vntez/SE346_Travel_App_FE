@@ -1,58 +1,313 @@
-import { StyleSheet } from "react-native";
-import { colors } from "../common/colors";
-import { commonStyles } from "../common/styles";
+import { StyleSheet } from 'react-native';
+import { colors } from '../common/colors';
 
 const styles = StyleSheet.create({
-  ...commonStyles,
-
+  background: {
+    flex: 1,
+    backgroundColor: '#0F172A',
+  },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.overlay,
+    backgroundColor: 'rgba(8, 18, 33, 0.46)',
   },
-  containerChild: {
-    margin: 10,
-    marginTop: 10,
+  safeArea: {
+    flex: 1,
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
-    rowGap: 10
+    paddingHorizontal: 20,
+    paddingVertical: 24,
   },
-  lineContainer: {
+  header: {
+    marginBottom: 18,
+  },
+  brandPill: {
+    alignSelf: 'flex-start',
     flexDirection: 'row',
     alignItems: 'center',
-    width: '90%',
+    columnGap: 8,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    marginBottom: 24,
   },
-  line: {
+  brandText: {
+    color: '#0F172A',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  heroTitle: {
+    color: '#FFFFFF',
+    fontSize: 38,
+    fontWeight: '900',
+    lineHeight: 44,
+  },
+  heroSubtitle: {
+    color: 'rgba(255,255,255,0.88)',
+    fontSize: 16,
+    lineHeight: 23,
+    marginTop: 8,
+    maxWidth: 330,
+  },
+  formCard: {
+    borderRadius: 28,
+    backgroundColor: 'rgba(255, 255, 255, 0.96)',
+    paddingHorizontal: 20,
+    paddingTop: 22,
+    paddingBottom: 20,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 18 },
+    shadowOpacity: 0.25,
+    shadowRadius: 28,
+    elevation: 10,
+  },
+  formHeader: {
+    marginBottom: 18,
+  },
+  formTitle: {
+    color: '#0F172A',
+    fontSize: 28,
+    fontWeight: '900',
+  },
+  formSubtitle: {
+    color: '#64748B',
+    fontSize: 14,
+    lineHeight: 20,
+    marginTop: 5,
+  },
+  field: {
+    marginBottom: 15,
+  },
+  label: {
+    color: '#334155',
+    fontSize: 14,
+    fontWeight: '800',
+    marginBottom: 8,
+  },
+  passwordLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  forgotText: {
+    color: colors.primaryDark,
+    fontSize: 13,
+    fontWeight: '800',
+    marginBottom: 8,
+  },
+  inputShell: {
+    minHeight: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 10,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#DDE7F0',
+    backgroundColor: '#F8FAFC',
+    paddingHorizontal: 15,
+  },
+  input: {
+    flex: 1,
+    color: '#0F172A',
+    fontSize: 16,
+    minHeight: 54,
+  },
+  eyeButton: {
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryButton: {
+    height: 58,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    columnGap: 10,
+    borderRadius: 18,
+    backgroundColor: colors.primary,
+    marginTop: 6,
+    shadowColor: colors.primaryDark,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.24,
+    shadowRadius: 14,
+    elevation: 5,
+  },
+  primaryButtonPressed: {
+    opacity: 0.82,
+  },
+  primaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: '900',
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 12,
+    marginVertical: 20,
+  },
+  divider: {
     flex: 1,
     height: 1,
-    backgroundColor: colors.textMuted,
+    backgroundColor: '#E2E8F0',
   },
-  text: {
-    color: colors.textMuted,
-    fontSize: 15,
-    marginHorizontal: 10,
+  dividerText: {
+    color: '#64748B',
+    fontSize: 13,
+    fontWeight: '700',
   },
-  containerGG_Apple: {
+  socialRow: {
     flexDirection: 'row',
-    columnGap: 20,
+    columnGap: 12,
   },
-  buttonGG_Apple: {
-    borderRadius: 8,
-    backgroundColor: colors.surface,
+  socialButton: {
+    flex: 1,
+    height: 52,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 150,
-    height: 45,
+    columnGap: 9,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: '#DDE7F0',
+    backgroundColor: '#FFFFFF',
   },
-  containerImageGG_Apple: {
+  socialIcon: {
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+  },
+  socialText: {
+    color: '#0F172A',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  registerRow: {
     flexDirection: 'row',
-    columnGap: 10,
-    alignItems: 'center'
+    justifyContent: 'center',
+    alignItems: 'center',
+    columnGap: 6,
+    paddingTop: 18,
   },
-  buttonGG_AppleText: { 
-    color: colors.black,
+  registerText: {
+    color: 'rgba(255,255,255,0.82)',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  registerLink: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  forgotBackdrop: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    backgroundColor: 'rgba(15, 23, 42, 0.62)',
+  },
+  forgotCard: {
+    borderRadius: 26,
+    backgroundColor: '#FFFFFF',
+    padding: 22,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 18 },
+    shadowOpacity: 0.25,
+    shadowRadius: 30,
+    elevation: 12,
+  },
+  forgotHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  forgotIconWrap: {
+    width: 52,
+    height: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 26,
+    backgroundColor: '#EAF6FF',
+  },
+  forgotCloseButton: {
+    width: 42,
+    height: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 21,
+    backgroundColor: '#F1F5F9',
+  },
+  forgotTitle: {
+    color: '#0F172A',
+    fontSize: 25,
+    fontWeight: '900',
+  },
+  forgotDescription: {
+    color: '#64748B',
+    fontSize: 15,
+    lineHeight: 22,
+    marginTop: 8,
+    marginBottom: 18,
+  },
+  forgotLabel: {
+    color: '#334155',
+    fontSize: 14,
+    fontWeight: '800',
+    marginBottom: 8,
+  },
+  forgotInputShell: {
+    minHeight: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 10,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#DDE7F0',
+    backgroundColor: '#F8FAFC',
+    paddingHorizontal: 15,
+  },
+  forgotInput: {
+    flex: 1,
+    color: '#0F172A',
     fontSize: 16,
-    fontWeight: 'bold',
+    minHeight: 54,
+  },
+  forgotActions: {
+    flexDirection: 'row',
+    columnGap: 12,
+    marginTop: 20,
+  },
+  forgotSecondaryButton: {
+    flex: 1,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+    backgroundColor: '#F1F5F9',
+  },
+  forgotSecondaryText: {
+    color: '#334155',
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  forgotPrimaryButton: {
+    flex: 1.3,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+    backgroundColor: colors.primary,
+  },
+  forgotPrimaryText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '900',
   },
 });
 

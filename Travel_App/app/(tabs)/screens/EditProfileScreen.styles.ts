@@ -1,58 +1,192 @@
-import { StyleSheet } from "react-native";
-import { colors } from "../common/colors";
-import { commonStyles } from "../common/styles";
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
-  // Kế thừa các style chung
-  ...commonStyles,
-
-    avatarContainer : {
-        width: 160,
-        height: 160,
-    },
-  
-    avatarBorder: {
-        borderWidth: 3,
-        borderColor: colors.primary,
-        width: 150,
-        height: 150,
-        //backgroundColor: "#fff",
-        //     //backgroundColor: "#fff",
-        //     borderRadius: 70,
-        //     overflow: "hidden",
-        borderRadius: 70,
-        overflow: "hidden",
-        position: 'relative',
-    },
-  
-    iconContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        //borderWidth: 5,
-        //borderColor: colors.primary,
-        width: 50,
-        height: 50,
-        borderRadius: 70,
-        position: 'absolute',
-        bottom: 5, // combine with position to be clear
-        right: 10,
-        shadowColor: colors.primary,
-        shadowOpacity: 0.5, 
-        shadowRadius: 10, // cang be cang net, lon thi lan trong
-        shadowOffset: {width: 0, height: 4},
-    },
-  
-      // borderAvatar: {
-      //     borderWidth: 5,
-      //     borderColor: colors.primary,
-
-    containerChild: {
-        margin: 10,
-        marginTop: 10,
-        justifyContent: 'center',
-        rowGap: 10
-    },
-      
+  screen: {
+    flex: 1,
+    backgroundColor: '#F6F8FB',
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 18,
+    paddingTop: 8,
+    paddingBottom: 34,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  headerButton: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 22,
+    backgroundColor: '#FFFFFF',
+  },
+  headerTitleBlock: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 12,
+  },
+  headerEyebrow: {
+    color: '#0284C7',
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  headerTitle: {
+    color: '#0F172A',
+    fontSize: 24,
+    lineHeight: 30,
+    fontWeight: '900',
+    marginTop: 2,
+  },
+  profilePreview: {
+    minHeight: 150,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 28,
+    backgroundColor: '#0F766E',
+    padding: 18,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 14 },
+    shadowOpacity: 0.12,
+    shadowRadius: 24,
+    elevation: 8,
+  },
+  avatarFrame: {
+    width: 96,
+    height: 96,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    borderWidth: 4,
+    borderColor: 'rgba(255,255,255,0.78)',
+    borderRadius: 32,
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+  },
+  avatarInitials: {
+    fontSize: 36,
+    fontWeight: '900',
+    letterSpacing: 0,
+  },
+  profilePreviewText: {
+    flex: 1,
+    marginLeft: 18,
+  },
+  previewName: {
+    color: '#FFFFFF',
+    fontSize: 25,
+    lineHeight: 31,
+    fontWeight: '900',
+  },
+  previewMeta: {
+    color: '#CCFBF1',
+    fontSize: 14,
+    fontWeight: '800',
+    marginTop: 6,
+  },
+  formCard: {
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 26,
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    marginTop: 16,
+  },
+  field: {
+    marginBottom: 16,
+  },
+  label: {
+    color: '#475569',
+    fontSize: 13,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    marginBottom: 8,
+  },
+  inputShell: {
+    minHeight: 54,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 18,
+    backgroundColor: '#F8FAFC',
+    paddingHorizontal: 14,
+    columnGap: 10,
+  },
+  inputShellDisabled: {
+    opacity: 0.65,
+  },
+  inputShellMultiline: {
+    alignItems: 'flex-start',
+    paddingTop: 15,
+  },
+  input: {
+    flex: 1,
+    minHeight: 52,
+    color: '#0F172A',
+    fontSize: 15,
+    fontWeight: '700',
+    paddingVertical: 0,
+  },
+  inputMultiline: {
+    minHeight: 64,
+    lineHeight: 21,
+    textAlignVertical: 'top',
+    paddingTop: 0,
+    paddingBottom: 10,
+  },
+  noteBox: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    borderRadius: 18,
+    backgroundColor: '#E0F2FE',
+    paddingHorizontal: 13,
+    paddingVertical: 12,
+    columnGap: 9,
+  },
+  noteText: {
+    flex: 1,
+    color: '#0369A1',
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: '700',
+  },
+  saveButton: {
+    minHeight: 54,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 20,
+    backgroundColor: '#0284C7',
+    marginTop: 18,
+    columnGap: 8,
+    shadowColor: '#0284C7',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.24,
+    shadowRadius: 18,
+    elevation: 7,
+  },
+  saveButtonDisabled: {
+    backgroundColor: '#CBD5E1',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '900',
+  },
 });
 
 export default styles;

@@ -1,72 +1,167 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
-import { colors } from "../common/colors";
-import PromotionEditor from '../components/PromotionEditor';
-import styles from './OwnerManagementScreen.styles';
-import { useAuth } from '../context/AuthContext';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Image, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { getScheduleString } from '@/app/service/PromotionShedule';
+import { showErrorAlert, showSuccessAlert } from '@/components/app-alert';
 import {
   createPromotion,
-  fetchOwnerPlaces,
-  fetchPlacePromotions,
+  deletePromotion,
+  getCachedOwnerPlaces,
+  getCachedPlacePromotions,
+  refreshOwnerPlaces,
+  refreshPlacePromotions,
+  togglePromotion,
+  updatePromotion,
+  type OwnerPlace,
 } from '../../../lib/api/owner';
-import type { OwnerPlace } from '../../../lib/api/owner';
+import PromotionEditor from '../components/PromotionEditor';
 import type { PromotionItem } from '../types/promotion';
 import { getApiErrorMessage } from '../context/AuthContext';
+import styles from './OwnerManagementScreen.styles';
 
-const renderPlace = (item: OwnerPlace, onEdit: (item: OwnerPlace) => void) => {
+type IconName = React.ComponentProps<typeof Ionicons>['name'];
+
+const FALLBACK_IMAGE =
+  'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80';
+
+const defaultSchedule = (): PromotionItem['schedule'] => ({
+  startDate: '',
+  endDate: '',
+  days: ['M'],
+  startTime: '8:00 AM',
+  endTime: '5:00 PM',
+  specificTime: false,
+});
+
+function PlaceCard({
+  item,
+  selected,
+  onPress,
+}: {
+  item: OwnerPlace;
+  selected: boolean;
+  onPress: () => void;
+}) {
   return (
-    <View style={styles.cardContainer}>
-      <View style={styles.imageWrapper}>
-        <Image source={{ uri: item.Image }} style={styles.cardImage} />
-      </View>
-      <View style={styles.cardContent}>
+    <Pressable style={[styles.placeCard, selected && styles.placeCardSelected]} onPress={onPress}>
+      <Image source={{ uri: item.Image || FALLBACK_IMAGE }} style={styles.placeImage} />
+      <View style={styles.placeContent}>
         <Text style={styles.placeName} numberOfLines={1}>{item.Name}</Text>
-        <Text style={styles.locationText} numberOfLines={1}>{item.Location}</Text>
-        <View style={[styles.buttonRow, { justifyContent: 'flex-end' }]}>
-          <TouchableOpacity style={styles.btnEdit} onPress={() => onEdit(item)}>
-            <Ionicons name="pencil" size={14} color="#212121" />
-            <Text style={styles.btnEditText}>Edit</Text>
-          </TouchableOpacity>
+        <View style={styles.placeLocationRow}>
+          <Ionicons name="location-outline" size={15} color="#64748B" />
+          <Text style={styles.placeLocation} numberOfLines={1}>{item.Location}</Text>
         </View>
+      </View>
+      <View style={[styles.selectedMark, selected && styles.selectedMarkActive]}>
+        <Ionicons name={selected ? 'checkmark' : 'chevron-forward'} size={18} color={selected ? '#FFFFFF' : '#94A3B8'} />
+      </View>
+    </Pressable>
+  );
+}
+
+function PromotionCard({
+  item,
+  busy,
+  onToggle,
+  onEdit,
+  onDelete,
+}: {
+  item: PromotionItem;
+  busy: boolean;
+  onToggle: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  return (
+    <View style={styles.promotionCard}>
+      <View style={styles.promotionHeader}>
+        <View style={[styles.promotionStatus, item.isActive ? styles.promotionStatusActive : styles.promotionStatusInactive]}>
+          <Ionicons
+            name={(item.isActive ? 'flash' : 'pause-circle-outline') as IconName}
+            size={14}
+            color={item.isActive ? '#047857' : '#64748B'}
+          />
+          <Text style={[styles.promotionStatusText, !item.isActive && styles.promotionStatusTextInactive]}>
+            {item.isActive ? 'Đang chạy' : 'Đã tạm dừng'}
+          </Text>
+        </View>
+
+        <Pressable style={styles.toggleButton} onPress={onToggle} disabled={busy}>
+          {busy ? (
+            <ActivityIndicator size="small" color="#0284C7" />
+          ) : (
+            <Ionicons name={item.isActive ? 'toggle' : 'toggle-outline'} size={28} color={item.isActive ? '#0284C7' : '#94A3B8'} />
+          )}
+        </Pressable>
+      </View>
+
+      <Text style={styles.promotionTitle}>{item.title}</Text>
+      <Text style={styles.promotionSchedule}>{getScheduleString(item.schedule)}</Text>
+
+      <View style={styles.promotionActions}>
+        <Pressable style={styles.secondaryAction} onPress={onEdit}>
+          <Ionicons name="create-outline" size={17} color="#0369A1" />
+          <Text style={styles.secondaryActionText}>Sửa</Text>
+        </Pressable>
+
+        <Pressable style={styles.dangerAction} onPress={onDelete}>
+          <Ionicons name="trash-outline" size={17} color="#DC2626" />
+          <Text style={styles.dangerActionText}>Xóa</Text>
+        </Pressable>
       </View>
     </View>
   );
-};
+}
 
 export default function OwnerManagementScreen({ navigation }: any) {
-  const { user } = useAuth();
-  const flatListRef = React.useRef<FlatList>(null);
-  const [places, setPlaces] = useState<OwnerPlace[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedPlace, setSelectedPlace] = useState<OwnerPlace | null>(null);
-  const [promotions, setPromotions] = useState<PromotionItem[]>([]);
+  const cachedPlaces = getCachedOwnerPlaces();
+  const [places, setPlaces] = useState<OwnerPlace[]>(cachedPlaces ?? []);
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(cachedPlaces?.[0]?.Id ?? null);
+  const [promotions, setPromotions] = useState<PromotionItem[]>(
+    cachedPlaces?.[0] ? getCachedPlacePromotions(cachedPlaces[0].Id) ?? [] : []
+  );
+  const [loading, setLoading] = useState(!cachedPlaces);
+  const [refreshing, setRefreshing] = useState(false);
+  const [promotionLoading, setPromotionLoading] = useState(false);
+  const [busyPromotionId, setBusyPromotionId] = useState<string | null>(null);
   const [showEditor, setShowEditor] = useState(false);
+  const [editingPromotion, setEditingPromotion] = useState<PromotionItem | null>(null);
 
-  const loadPlaces = useCallback(async () => {
-    setLoading(true);
+  const selectedPlace = useMemo(
+    () => places.find((place) => place.Id === selectedPlaceId) ?? null,
+    [places, selectedPlaceId]
+  );
+
+  const loadPlaces = useCallback(async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else if (!places.length) {
+      setLoading(true);
+    }
+
     try {
-      const data = await fetchOwnerPlaces();
+      const data = await refreshOwnerPlaces();
       setPlaces(data);
-      if (data.length > 0) {
-        setSelectedPlace((prev) => prev ?? data[0]);
-      } else {
-        setSelectedPlace(null);
-      }
-    } catch {
-      setPlaces([]);
-      setSelectedPlace(null);
+      setSelectedPlaceId((prev) => prev && data.some((place) => place.Id === prev) ? prev : data[0]?.Id ?? null);
+    } catch (err) {
+      showErrorAlert(getApiErrorMessage(err), 'Không tải được địa điểm');
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  }, []);
+  }, [places.length]);
 
   const loadPromotions = useCallback(async (placeId: string) => {
+    setPromotionLoading(true);
     try {
-      const data = await fetchPlacePromotions(placeId);
+      const data = await refreshPlacePromotions(placeId);
       setPromotions(data);
-    } catch {
+    } catch (err) {
       setPromotions([]);
+      showErrorAlert(getApiErrorMessage(err), 'Không tải được ưu đãi');
+    } finally {
+      setPromotionLoading(false);
     }
   }, []);
 
@@ -75,138 +170,226 @@ export default function OwnerManagementScreen({ navigation }: any) {
   }, [loadPlaces]);
 
   useEffect(() => {
-    if (selectedPlace) {
-      loadPromotions(selectedPlace.Id);
+    if (!selectedPlaceId) {
+      setPromotions([]);
+      return;
     }
-  }, [selectedPlace, loadPromotions]);
 
-  const handleEditPress = (item: OwnerPlace) => {
-    setSelectedPlace(item);
+    const cached = getCachedPlacePromotions(selectedPlaceId);
+    if (cached) {
+      setPromotions(cached);
+    }
+    loadPromotions(selectedPlaceId);
+  }, [loadPromotions, selectedPlaceId]);
+
+  const openCreatePromotion = () => {
+    setEditingPromotion(null);
     setShowEditor(true);
-    flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
   };
 
-  const handleSave = async (data: { title: string; schedule: PromotionItem['schedule'] }) => {
+  const handleSavePromotion = async (data: { title: string; schedule: PromotionItem['schedule'] }) => {
     if (!selectedPlace) return;
+
     try {
-      await createPromotion(selectedPlace.Id, {
-        title: data.title,
-        isActive: true,
-        schedule: data.schedule,
-      });
-      await loadPromotions(selectedPlace.Id);
+      if (editingPromotion) {
+        await updatePromotion(editingPromotion.id, {
+          title: data.title,
+          schedule: data.schedule,
+        });
+        showSuccessAlert('Đã cập nhật ưu đãi.');
+      } else {
+        await createPromotion(selectedPlace.Id, {
+          title: data.title,
+          isActive: true,
+          schedule: data.schedule,
+        });
+        showSuccessAlert('Đã tạo ưu đãi mới.');
+      }
+
       setShowEditor(false);
+      setEditingPromotion(null);
+      await loadPromotions(selectedPlace.Id);
     } catch (err) {
-      Alert.alert('Loi', getApiErrorMessage(err));
+      showErrorAlert(getApiErrorMessage(err));
     }
   };
 
-  const HeaderComponent = () => {
-    if (!selectedPlace) {
-      return (
-        <View style={{ padding: 20 }}>
-          <Text>Chua co dia diem. Hay them dia diem moi.</Text>
-        </View>
-      );
-    }
-    return (
-      <View>
-        <View style={{ flexDirection: 'row', margin: 10, marginBottom: 0, alignItems: 'center', justifyContent: "space-between" }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={styles.roundButton}>
-              <Ionicons name="storefront" size={35} color={colors.primary} />
-            </View>
-            <View style={{ flexDirection: 'column', margin: 10 }}>
-              <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Dashboard</Text>
-              <Text style={[styles.linkText, { color: "#90a4ae" }]}>
-                Welcome back, {user?.name || 'Owner'}
-              </Text>
-            </View>
-          </View>
-          <View style={{ paddingRight: 10 }}>
-            <Ionicons name="notifications" size={30} color="black" />
-          </View>
-        </View>
-        <View style={{ marginHorizontal: 15 }}>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Add Location")}>
-            <Text style={styles.buttonText}>+ Add New Place</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{ marginHorizontal: 10, backgroundColor: '#fff', borderRadius: 10, marginVertical: 15, padding: 5 }}>
-          <Text style={{ fontWeight: 'bold', fontSize: 20, marginVertical: 10 }}>Your Locations</Text>
-          <View style={{ margin: 0, marginBottom: 20, position: 'relative' }}>
-            <View style={[styles.imageFrame, { height: 180, borderRadius: 10, borderWidth: 0 }]}>
-              <Image
-                source={{ uri: selectedPlace.Image }}
-                style={{ width: "100%", height: "100%" }}
-                blurRadius={1}
-              />
-            </View>
-            <Text style={{
-              position: 'absolute', left: 15, bottom: 30, zIndex: 1,
-              color: 'white', fontWeight: 'bold', fontSize: 20, padding: 5
-            }}>
-              {selectedPlace.Name}
-            </Text>
-            <Text style={{
-              position: 'absolute', left: 15, bottom: 8, zIndex: 1,
-              color: '#e2e8f0', fontWeight: '500', fontSize: 15, padding: 5
-            }}>
-              {selectedPlace.Location}
-            </Text>
-          </View>
-          {promotions.length > 0 && (
-            <Text style={{ marginBottom: 8, color: colors.textSecondary }}>
-              {promotions.length} promotion(s)
-            </Text>
-          )}
-          {showEditor ? (
-            <PromotionEditor
-              initialData={{ title: '', schedule: { startDate: '', endDate: '', days: ['M'], startTime: '8:00 AM', endTime: '5:00 PM', specificTime: false } }}
-              onSave={handleSave}
-              onCancel={() => setShowEditor(false)}
-            />
-          ) : (
-            <TouchableOpacity onPress={() => setShowEditor(true)}>
-              <Text style={{ color: colors.primary, fontWeight: 'bold', marginBottom: 10 }}>
-                + Add promotion for this place
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
+  const handleTogglePromotion = async (promotion: PromotionItem) => {
+    setBusyPromotionId(promotion.id);
+    setPromotions((prev) =>
+      prev.map((item) => item.id === promotion.id ? { ...item, isActive: !item.isActive } : item)
     );
+
+    try {
+      const updated = await togglePromotion(promotion.id);
+      setPromotions((prev) => prev.map((item) => item.id === updated.id ? updated : item));
+    } catch (err) {
+      setPromotions((prev) =>
+        prev.map((item) => item.id === promotion.id ? promotion : item)
+      );
+      showErrorAlert(getApiErrorMessage(err));
+    } finally {
+      setBusyPromotionId(null);
+    }
   };
 
-  if (loading) {
+  const handleDeletePromotion = async (promotion: PromotionItem) => {
+    if (!selectedPlace) return;
+
+    setBusyPromotionId(promotion.id);
+    try {
+      await deletePromotion(promotion.id);
+      setPromotions((prev) => prev.filter((item) => item.id !== promotion.id));
+      showSuccessAlert('Đã xóa ưu đãi.');
+      await loadPromotions(selectedPlace.Id);
+    } catch (err) {
+      showErrorAlert(getApiErrorMessage(err));
+    } finally {
+      setBusyPromotionId(null);
+    }
+  };
+
+  if (loading && !places.length) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 30 }}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
+      <SafeAreaView style={styles.centerScreen}>
+        <ActivityIndicator size="large" color="#0284C7" />
+        <Text style={styles.loadingText}>Đang tải địa điểm...</Text>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', marginTop: 30 }}>
-      <FlatList
-        ref={flatListRef}
-        data={places}
-        renderItem={({ item }) => renderPlace(item, handleEditPress)}
-        keyExtractor={(item) => item.Id}
-        ListHeaderComponent={HeaderComponent}
-        contentContainerStyle={{ paddingBottom: 20 }}
+    <SafeAreaView style={styles.screen} edges={['top']}>
+      <ScrollView
         showsVerticalScrollIndicator={false}
-        refreshing={loading}
-        onRefresh={loadPlaces}
-        ListEmptyComponent={
-          <View style={{ padding: 20, alignItems: 'center' }}>
-            <Text style={{ marginBottom: 10 }}>Chua co dia diem nao</Text>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Add Location")}>
-              <Text style={styles.buttonText}>+ Add New Place</Text>
-            </TouchableOpacity>
-          </View>
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => loadPlaces(true)} tintColor="#0284C7" />
         }
-      />
-    </View>
+      >
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.headerEyebrow}>Owner Center</Text>
+            <Text style={styles.headerTitle}>Địa điểm</Text>
+          </View>
+          <Pressable style={styles.headerButton} onPress={() => navigation.navigate('Add Location')}>
+            <Ionicons name="add" size={24} color="#FFFFFF" />
+          </Pressable>
+        </View>
+
+        {places.length ? (
+          <>
+            <View style={styles.sectionHeader}>
+              <View>
+                <Text style={styles.sectionEyebrow}>Danh sách</Text>
+                <Text style={styles.sectionTitle}>Địa điểm đang quản lý</Text>
+              </View>
+              <Text style={styles.countPill}>{places.length}</Text>
+            </View>
+
+            <View style={styles.placeList}>
+              {places.map((place) => (
+                <PlaceCard
+                  key={place.Id}
+                  item={place}
+                  selected={place.Id === selectedPlaceId}
+                  onPress={() => {
+                    setSelectedPlaceId(place.Id);
+                    setShowEditor(false);
+                    setEditingPromotion(null);
+                  }}
+                />
+              ))}
+            </View>
+
+            {selectedPlace ? (
+              <View style={styles.selectedPanel}>
+                <Image source={{ uri: selectedPlace.Image || FALLBACK_IMAGE }} style={styles.selectedImage} />
+                <View style={styles.selectedOverlay} />
+                <View style={styles.selectedContent}>
+                  <Text style={styles.selectedTitle} numberOfLines={2}>{selectedPlace.Name}</Text>
+                  <View style={styles.selectedLocationRow}>
+                    <Ionicons name="location-outline" size={17} color="#E0F2FE" />
+                    <Text style={styles.selectedLocation} numberOfLines={1}>{selectedPlace.Location}</Text>
+                  </View>
+                </View>
+              </View>
+            ) : null}
+
+            <View style={styles.sectionHeader}>
+              <View>
+                <Text style={styles.sectionEyebrow}>Ưu đãi</Text>
+                <Text style={styles.sectionTitle}>Chiến dịch khuyến mãi</Text>
+              </View>
+              <Pressable style={styles.sectionAction} onPress={openCreatePromotion}>
+                <Ionicons name="add" size={17} color="#0284C7" />
+                <Text style={styles.sectionActionText}>Tạo</Text>
+              </Pressable>
+            </View>
+
+            {showEditor ? (
+              <PromotionEditor
+                initialData={editingPromotion ?? {
+                  title: '',
+                  schedule: defaultSchedule(),
+                }}
+                onSave={handleSavePromotion}
+                onCancel={() => {
+                  setShowEditor(false);
+                  setEditingPromotion(null);
+                }}
+              />
+            ) : null}
+
+            {promotionLoading && !promotions.length ? (
+              <View style={styles.loadingPromotions}>
+                <ActivityIndicator size="small" color="#0284C7" />
+                <Text style={styles.loadingPromotionText}>Đang tải ưu đãi...</Text>
+              </View>
+            ) : null}
+
+            {promotions.length ? (
+              <View style={styles.promotionList}>
+                {promotions.map((promotion) => (
+                  <PromotionCard
+                    key={promotion.id}
+                    item={promotion}
+                    busy={busyPromotionId === promotion.id}
+                    onToggle={() => handleTogglePromotion(promotion)}
+                    onEdit={() => {
+                      setEditingPromotion(promotion);
+                      setShowEditor(true);
+                    }}
+                    onDelete={() => handleDeletePromotion(promotion)}
+                  />
+                ))}
+              </View>
+            ) : !promotionLoading ? (
+              <View style={styles.emptyPromoCard}>
+                <View style={styles.emptyPromoIcon}>
+                  <Ionicons name="pricetag-outline" size={28} color="#0284C7" />
+                </View>
+                <Text style={styles.emptyPromoTitle}>Chưa có ưu đãi</Text>
+                <Text style={styles.emptyPromoText}>Tạo ưu đãi để tăng lượt ghé thăm địa điểm này.</Text>
+                <Pressable style={styles.emptyPromoButton} onPress={openCreatePromotion}>
+                  <Text style={styles.emptyPromoButtonText}>Tạo ưu đãi</Text>
+                </Pressable>
+              </View>
+            ) : null}
+          </>
+        ) : (
+          <View style={styles.emptyCard}>
+            <View style={styles.emptyIcon}>
+              <Ionicons name="storefront-outline" size={30} color="#0284C7" />
+            </View>
+            <Text style={styles.emptyTitle}>Chưa có địa điểm</Text>
+            <Text style={styles.emptyText}>Tạo địa điểm đầu tiên để bắt đầu quản lý ưu đãi và thông tin hiển thị.</Text>
+            <Pressable style={styles.emptyButton} onPress={() => navigation.navigate('Add Location')}>
+              <Text style={styles.emptyButtonText}>Thêm địa điểm</Text>
+            </Pressable>
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 }

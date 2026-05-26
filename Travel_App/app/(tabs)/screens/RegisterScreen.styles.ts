@@ -1,52 +1,221 @@
-import { StyleSheet } from "react-native";
-import { colors } from "../common/colors";
-import { commonStyles } from "../common/styles";
+import { StyleSheet } from 'react-native';
+import { colors } from '../common/colors';
 
 const styles = StyleSheet.create({
-  ...commonStyles,
-
-  text: {
-    color: colors.textMuted,
-    fontSize: 15,
+  background: {
+    flex: 1,
+    backgroundColor: '#0F172A',
   },
-  checkbox: {
-    marginRight: 10,
-    width: 20,
-    height: 20,
-    borderRadius: 5,
-    borderColor: colors.border,
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(8, 18, 33, 0.5)',
   },
-
-  containerGG_Apple: {
+  safeArea: {
+    flex: 1,
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 24,
+  },
+  header: {
+    marginBottom: 16,
+  },
+  brandPill: {
+    alignSelf: 'flex-start',
     flexDirection: 'row',
-    columnGap: 20,
-    marginTop: 10,
+    alignItems: 'center',
+    columnGap: 8,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    marginBottom: 22,
   },
-  buttonGG_Apple: {
-    borderRadius: 8,
-    backgroundColor: colors.surface, // Sử dụng surface thay vì white
+  brandText: {
+    color: '#0F172A',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  heroTitle: {
+    color: '#FFFFFF',
+    fontSize: 34,
+    fontWeight: '900',
+    lineHeight: 40,
+  },
+  heroSubtitle: {
+    color: 'rgba(255,255,255,0.88)',
+    fontSize: 15,
+    lineHeight: 22,
+    marginTop: 8,
+    maxWidth: 340,
+  },
+  formCard: {
+    borderRadius: 28,
+    backgroundColor: 'rgba(255, 255, 255, 0.96)',
+    paddingHorizontal: 20,
+    paddingTop: 22,
+    paddingBottom: 20,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 18 },
+    shadowOpacity: 0.25,
+    shadowRadius: 28,
+    elevation: 10,
+  },
+  formHeader: {
+    marginBottom: 16,
+  },
+  formTitle: {
+    color: '#0F172A',
+    fontSize: 28,
+    fontWeight: '900',
+  },
+  formSubtitle: {
+    color: '#64748B',
+    fontSize: 14,
+    lineHeight: 20,
+    marginTop: 5,
+  },
+  field: {
+    marginBottom: 13,
+  },
+  label: {
+    color: '#334155',
+    fontSize: 14,
+    fontWeight: '800',
+    marginBottom: 8,
+  },
+  inputShell: {
+    minHeight: 54,
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 10,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#DDE7F0',
+    backgroundColor: '#F8FAFC',
+    paddingHorizontal: 15,
+  },
+  input: {
+    flex: 1,
+    color: '#0F172A',
+    fontSize: 16,
+    minHeight: 52,
+  },
+  eyeButton: {
+    width: 38,
+    height: 38,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 150,
-    height: 45,
-    borderWidth: 1,
-    borderColor: colors.border,
   },
-  containerImageGG_Apple: {
+  termsRow: {
     flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+    marginBottom: 16,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 7,
+    borderColor: '#CBD5E1',
+    marginRight: 10,
+  },
+  termsText: {
+    flex: 1,
+    color: '#475569',
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '600',
+  },
+  termsLink: {
+    color: colors.primaryDark,
+    fontWeight: '900',
+  },
+  primaryButton: {
+    height: 58,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     columnGap: 10,
-    alignItems: 'center'
+    borderRadius: 18,
+    backgroundColor: colors.primary,
+    shadowColor: colors.primaryDark,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.24,
+    shadowRadius: 14,
+    elevation: 5,
   },
-  buttonGG_AppleText: {
-    color: colors.black,
-    fontSize: 16,
-    fontWeight: 'bold',
+  primaryButtonPressed: {
+    opacity: 0.82,
   },
-  
-  line: {
+  primaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: '900',
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 12,
+    marginVertical: 18,
+  },
+  divider: {
     flex: 1,
     height: 1,
-    backgroundColor: colors.textMuted,
+    backgroundColor: '#E2E8F0',
+  },
+  dividerText: {
+    color: '#64748B',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  socialRow: {
+    flexDirection: 'row',
+    columnGap: 12,
+  },
+  socialButton: {
+    flex: 1,
+    height: 52,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    columnGap: 9,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#DDE7F0',
+    backgroundColor: '#FFFFFF',
+  },
+  socialIcon: {
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+  },
+  socialText: {
+    color: '#0F172A',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  loginRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    columnGap: 6,
+    paddingTop: 18,
+  },
+  loginText: {
+    color: 'rgba(255,255,255,0.82)',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  loginLink: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '900',
   },
 });
 

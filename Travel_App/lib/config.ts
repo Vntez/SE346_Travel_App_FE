@@ -9,8 +9,8 @@ function defaultApiBaseUrl(): string {
 }
 
 export const API_BASE_URL =
-  (Constants.expoConfig?.extra?.apiBaseUrl as string | undefined) ||
   process.env.EXPO_PUBLIC_API_BASE_URL ||
+  (Constants.expoConfig?.extra?.apiBaseUrl as string | undefined) ||
   defaultApiBaseUrl();
 
 export const API_V1 = `${API_BASE_URL}/api/v1`;

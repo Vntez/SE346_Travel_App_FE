@@ -1,122 +1,245 @@
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import React from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import React, { useMemo } from 'react';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { showAppAlert } from '@/components/app-alert';
 import styles from './ProfileScreen.styles';
 import { useAuth } from '../context/AuthContext';
 
-const DEFAULT_AVATAR =
-  'https://th.bing.com/th/id/OIP.iY6OLSZImubhw9Yiwg6OuAHaHa?w=186&h=186&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3';
+type IconName = React.ComponentProps<typeof Ionicons>['name'];
+
+type MenuItem = {
+  title: string;
+  subtitle: string;
+  icon: IconName;
+  iconColor: string;
+  iconBackground: string;
+  onPress: () => void;
+  danger?: boolean;
+};
+
+const avatarPalettes = [
+  { background: '#E0F2FE', color: '#0369A1' },
+  { background: '#DCFCE7', color: '#047857' },
+  { background: '#FEF3C7', color: '#A16207' },
+  { background: '#FCE7F3', color: '#BE185D' },
+  { background: '#EDE9FE', color: '#6D28D9' },
+];
+
+function getInitials(name: string) {
+  const words = name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (!words.length) {
+    return 'U';
+  }
+
+  const first = words[0]?.charAt(0) ?? '';
+  const last = words.length > 1 ? words[words.length - 1]?.charAt(0) : words[0]?.charAt(1) ?? '';
+  return `${first}${last}`.toUpperCase();
+}
+
+function getAvatarPalette(name: string) {
+  const seed = name.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return avatarPalettes[seed % avatarPalettes.length];
+}
+
+function roleLabel(role?: string) {
+  const normalized = role?.trim().toLowerCase();
+  if (normalized === 'admin' || normalized === 'owner') {
+    return 'Chủ địa điểm';
+  }
+  return 'Du khách';
+}
 
 export default function ProfileScreen({ navigation }: any) {
   const { user } = useAuth();
-  const displayName = user?.fullName || user?.name || 'User';
-  const avatar = user?.avatarUrl || DEFAULT_AVATAR;
+  const displayName = user?.fullName || user?.name || 'Người dùng';
+  const initials = useMemo(() => getInitials(displayName), [displayName]);
+  const avatarPalette = useMemo(() => getAvatarPalette(displayName), [displayName]);
+
+  const showComingSoon = (title: string) => {
+    showAppAlert({
+      title,
+      message: 'Tính năng này sẽ được bổ sung trong phiên bản tiếp theo.',
+      type: 'info',
+    });
+  };
+
+  const menuItems: MenuItem[] = [
+    {
+      title: 'Chỉnh sửa hồ sơ',
+      subtitle: 'Cập nhật tên, username và vị trí',
+      icon: 'create-outline',
+      iconColor: '#0369A1',
+      iconBackground: '#E0F2FE',
+      onPress: () => navigation.navigate('Edit Profile'),
+    },
+    {
+      title: 'Địa điểm đã lưu',
+      subtitle: 'Xem lại những nơi bạn quan tâm',
+      icon: 'heart-outline',
+      iconColor: '#BE123C',
+      iconBackground: '#FFE4E6',
+      onPress: () => showComingSoon('Địa điểm đã lưu'),
+    },
+    {
+      title: 'Đánh giá của tôi',
+      subtitle: 'Quản lý các đánh giá đã đóng góp',
+      icon: 'chatbubble-ellipses-outline',
+      iconColor: '#047857',
+      iconBackground: '#DFF7EA',
+      onPress: () => showComingSoon('Đánh giá của tôi'),
+    },
+    {
+      title: 'Kỷ niệm chuyến đi',
+      subtitle: 'Ảnh và ghi chú từ các hành trình',
+      icon: 'images-outline',
+      iconColor: '#6D28D9',
+      iconBackground: '#EDE9FE',
+      onPress: () => showComingSoon('Kỷ niệm chuyến đi'),
+    },
+    {
+      title: 'Cài đặt',
+      subtitle: 'Thông báo, quyền riêng tư và ứng dụng',
+      icon: 'settings-outline',
+      iconColor: '#475569',
+      iconBackground: '#F1F5F9',
+      onPress: () => showComingSoon('Cài đặt'),
+    },
+    {
+      title: 'Đăng xuất',
+      subtitle: 'Thoát khỏi tài khoản hiện tại',
+      icon: 'log-out-outline',
+      iconColor: '#DC2626',
+      iconBackground: '#FEE2E2',
+      onPress: () => navigation.navigate('Log Out'),
+      danger: true,
+    },
+  ];
 
   return (
-    <View style={{ flex: 1, marginTop: 40, backgroundColor: '#ffff' }}>
-      <View style={[styles.container, { marginTop: 20 }]}>
-        <View style={{ alignItems: 'center' }}>
-          <View style={styles.avatarContainer}>
-            <View style={styles.avatarBorder}>
-              <Image
-                source={{ uri: avatar }}
-                style={{ width: '100%', height: '100%' }}
-              />
-            </View>
-
-            <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate("Edit Profile")}>
-              <Image
-                source={{ uri: 'https://cdn-icons-png.flaticon.com/128/10337/10337572.png' }}
-                style={{ width: '100%', height: '100%' }}
-              />
-            </TouchableOpacity>
+    <SafeAreaView style={styles.screen} edges={['top']}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.headerEyebrow}>Tài khoản</Text>
+            <Text style={styles.headerTitle}>Trang cá nhân</Text>
           </View>
 
-          <Text style={{ fontSize: 30, fontWeight: 'bold' }}>
-            {displayName}
-          </Text>
-          {user?.username ? (
-            <Text style={{ color: '#928d8d', fontSize: 16, marginTop: 4 }}>@{user.username}</Text>
-          ) : null}
+          <Pressable style={styles.headerIconButton} onPress={() => showComingSoon('Thông báo')}>
+            <Ionicons name="notifications-outline" size={21} color="#0F172A" />
+          </Pressable>
         </View>
 
-        <View style={styles.profileMenuContainer}>
-          <TouchableOpacity style={styles.profileMenuItemContainer}>
-            <View style={[styles.profileMenuItemIcon, { backgroundColor: '#f0d3e8' }]}>
-              <Ionicons name="heart" size={30} color="#da2c2c" />
+        <View style={styles.profileCard}>
+          <View style={styles.profileTopRow}>
+            <View
+              style={[
+                styles.avatarFrame,
+                !user?.avatarUrl && { backgroundColor: avatarPalette.background },
+              ]}
+            >
+              {user?.avatarUrl ? (
+                <Image source={{ uri: user.avatarUrl }} style={styles.avatarImage} />
+              ) : (
+                <Text style={[styles.avatarInitials, { color: avatarPalette.color }]}>
+                  {initials}
+                </Text>
+              )}
             </View>
-            <View style={styles.profileMenuTextContainer}>
-              <Text style={{ fontWeight: 'bold', fontSize: 20 }}>
-                Saved Places
-              </Text>
-              <Text style={{ color: '#928d8d', fontSize: 15 }}>
-                View your favourite places
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#cbc8c8" />
-          </TouchableOpacity>
 
-          <TouchableOpacity style={styles.profileMenuItemContainer}>
-            <View style={[styles.profileMenuItemIcon, { backgroundColor: '#c8c2f3' }]}>
-              <Ionicons name="images" size={25} color="#2e22d3" />
-            </View>
-            <View style={styles.profileMenuTextContainer}>
-              <Text style={{ fontWeight: 'bold', fontSize: 20 }}>
-                Trips Memories
-              </Text>
-              <Text style={{ color: '#928d8d', fontSize: 15 }}>
-                Take a trip down memory lane
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#cbc8c8" />
-          </TouchableOpacity>
+            <Pressable style={styles.editAvatarButton} onPress={() => navigation.navigate('Edit Profile')}>
+              <Ionicons name="camera-outline" size={18} color="#FFFFFF" />
+            </Pressable>
 
-          <TouchableOpacity style={[styles.profileMenuItemContainer]}>
-            <View style={[styles.profileMenuItemIcon, { backgroundColor: '#daf7b5' }]}>
-              <MaterialIcons name="rate-review" size={28} color="#a4c626" />
-            </View>
-            <View style={styles.profileMenuTextContainer}>
-              <Text style={{ fontWeight: 'bold', fontSize: 20 }}>
-                Your Reviews
+            <View style={styles.profileTextBlock}>
+              <Text style={styles.displayName} numberOfLines={2}>
+                {displayName}
               </Text>
-              <Text style={{ color: '#928d8d', fontSize: 15 }}>
-                Manage your contributions
+              <Text style={styles.username} numberOfLines={1}>
+                {user?.username ? `@${user.username}` : 'Chưa đặt username'}
               </Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color="#cbc8c8" />
-          </TouchableOpacity>
+          </View>
 
-          <TouchableOpacity style={[styles.profileMenuItemContainer]}>
-            <View style={[styles.profileMenuItemIcon, { backgroundColor: '#c4c2c2' }]}>
-              <Ionicons name="settings-sharp" size={30} color="#000000" />
+          <View style={styles.accountBadgeRow}>
+            <View style={styles.accountBadge}>
+              <Ionicons name="shield-checkmark-outline" size={16} color="#047857" />
+              <Text style={styles.accountBadgeText}>{roleLabel(user?.role)}</Text>
             </View>
-            <View style={styles.profileMenuTextContainer}>
-              <Text style={{ fontWeight: 'bold', fontSize: 20 }}>
-                Settings
-              </Text>
-              <Text style={{ color: '#928d8d', fontSize: 15 }}>
-                App preferences
-              </Text>
+            <View style={styles.accountBadge}>
+              <Ionicons name="checkmark-circle-outline" size={16} color="#0369A1" />
+              <Text style={styles.accountBadgeText}>Đang hoạt động</Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color="#cbc8c8" />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={[styles.profileMenuItemContainer]} onPress={() => navigation.navigate('Log Out')}>
-            <View style={[styles.profileMenuItemIcon, { backgroundColor: '#f5d0d0' }]}>
-              <Ionicons name="log-out-outline" size={30} color="#da2c2c" />
-            </View>
-            <View style={styles.profileMenuTextContainer}>
-              <Text style={{ fontWeight: 'bold', fontSize: 20 }}>
-                Log Out
-              </Text>
-              <Text style={{ color: '#928d8d', fontSize: 15 }}>
-                Sign out of your account
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#cbc8c8" />
-          </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </View>
+
+        <View style={styles.infoGrid}>
+          <View style={styles.infoCard}>
+            <View style={styles.infoIcon}>
+              <Ionicons name="mail-outline" size={19} color="#0369A1" />
+            </View>
+            <Text style={styles.infoLabel}>Email</Text>
+            <Text style={styles.infoValue} numberOfLines={1}>
+              {user?.email || 'Chưa có email'}
+            </Text>
+          </View>
+
+          <View style={styles.infoCard}>
+            <View style={[styles.infoIcon, styles.locationInfoIcon]}>
+              <Ionicons name="location-outline" size={19} color="#047857" />
+            </View>
+            <Text style={styles.infoLabel}>Vị trí</Text>
+            <Text style={styles.infoValue} numberOfLines={1}>
+              {user?.location || 'Chưa cập nhật'}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionEyebrow}>Trung tâm cá nhân</Text>
+          <Text style={styles.sectionTitle}>Quản lý trải nghiệm</Text>
+        </View>
+
+        <View style={styles.menuCard}>
+          {menuItems.map((item, index) => {
+            const isLast = index === menuItems.length - 1;
+
+            return (
+              <Pressable
+                key={item.title}
+                style={({ pressed }) => [
+                  styles.menuItem,
+                  !isLast && styles.menuDivider,
+                  pressed && styles.menuItemPressed,
+                ]}
+                onPress={item.onPress}
+              >
+                <View style={[styles.menuIconWrap, { backgroundColor: item.iconBackground }]}>
+                  <Ionicons name={item.icon} size={22} color={item.iconColor} />
+                </View>
+
+                <View style={styles.menuTextBlock}>
+                  <Text style={[styles.menuTitle, item.danger && styles.dangerText]}>
+                    {item.title}
+                  </Text>
+                  <Text style={styles.menuSubtitle} numberOfLines={1}>
+                    {item.subtitle}
+                  </Text>
+                </View>
+
+                <Ionicons name="chevron-forward" size={20} color="#CBD5E1" />
+              </Pressable>
+            );
+          })}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

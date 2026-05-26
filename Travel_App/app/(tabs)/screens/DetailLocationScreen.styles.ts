@@ -1,74 +1,326 @@
-import { StyleSheet } from "react-native";
-import { colors } from "../common/colors";
-import { commonStyles } from "../common/styles";
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
-  ...commonStyles,
-  
-  // Nút tròn đè lên ảnh
-  roundButton: {
-    position: 'absolute',
-    top: 15,
-    zIndex: 1,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    borderRadius: 20,
-    padding: 5,
-    width: 40,
-    height: 40,
+  screen: {
+    flex: 1,
+    backgroundColor: '#F6F8FB',
+  },
+  scrollContent: {
+    paddingBottom: 28,
+  },
+  centerScreen: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#F6F8FB',
+    paddingHorizontal: 28,
   },
-
-  // Thẻ thông tin ngang (Rating, Price, Feature)
-  detailCard: {
+  loadingText: {
+    color: '#475569',
+    fontSize: 15,
+    fontWeight: '700',
+    marginTop: 14,
+  },
+  emptyTitle: {
+    color: '#0F172A',
+    fontSize: 20,
+    fontWeight: '900',
+    textAlign: 'center',
+    marginTop: 14,
+  },
+  emptyButton: {
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 22,
+    backgroundColor: '#0284C7',
+    paddingHorizontal: 20,
+    marginTop: 16,
+  },
+  emptyButtonText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  hero: {
+    minHeight: 430,
+    justifyContent: 'space-between',
+    paddingHorizontal: 18,
+    paddingTop: 10,
+    paddingBottom: 34,
+    backgroundColor: '#0F172A',
+  },
+  heroImage: {
+    resizeMode: 'cover',
+  },
+  heroOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(15, 23, 42, 0.34)',
+  },
+  heroTopBar: {
+    zIndex: 1,
     flexDirection: 'row',
-    backgroundColor: colors.surface,
-    margin: 10,
-    marginTop: 20,
-    borderRadius: 20,
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.1,
-    shadowRadius: 15,
-    elevation: 15,
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-
-  iconBadge: {
-    borderRadius: 12,
-    margin: 12,
-    padding: 8,
+  roundButton: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 22,
+    backgroundColor: 'rgba(15, 23, 42, 0.48)',
   },
-
-  badgeLabel: {
-    fontWeight: '600',
-    color: colors.textSecondary,
-    fontSize: 10,
-    letterSpacing: 0.5,
+  favoriteButtonActive: {
+    backgroundColor: '#E11D48',
   },
-
-  badgeValue: {
-    fontWeight: '700', 
-    fontSize: 16,
-    color: colors.textPrimary,
+  heroBottom: {
+    zIndex: 1,
   },
-
-  // Review Section
-  reviewCard: {
-    backgroundColor: colors.surface,
+  featurePill: {
+    alignSelf: 'flex-start',
+    minHeight: 34,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 17,
+    backgroundColor: 'rgba(255,255,255,0.94)',
+    paddingHorizontal: 11,
+    columnGap: 6,
+    marginBottom: 12,
+  },
+  featurePillText: {
+    color: '#0369A1',
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  title: {
+    color: '#FFFFFF',
+    fontSize: 34,
+    lineHeight: 41,
+    fontWeight: '900',
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    columnGap: 7,
+    marginTop: 10,
+  },
+  locationText: {
+    flex: 1,
+    color: '#E0F2FE',
+    fontSize: 15,
+    lineHeight: 21,
+    fontWeight: '700',
+  },
+  contentCard: {
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    backgroundColor: '#F6F8FB',
+    paddingHorizontal: 18,
+    paddingTop: 20,
+    marginTop: -24,
+  },
+  quickStatsRow: {
+    flexDirection: 'row',
+    columnGap: 10,
+  },
+  statCard: {
+    flex: 1,
+    minHeight: 128,
     borderWidth: 1,
-    borderColor: colors.borderLight,
-    borderRadius: 15,
-    padding: 15,
-    marginTop: 20,
-    rowGap: 10,
+    borderColor: '#E2E8F0',
+    borderRadius: 22,
+    backgroundColor: '#FFFFFF',
+    padding: 12,
   },
-
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: colors.borderLight,
-  }
+  statIcon: {
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 15,
+    marginBottom: 10,
+  },
+  ratingIcon: {
+    backgroundColor: '#FEF3C7',
+  },
+  priceIcon: {
+    backgroundColor: '#DFF7EA',
+  },
+  featureIcon: {
+    backgroundColor: '#E0F2FE',
+  },
+  statValue: {
+    color: '#0F172A',
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: '900',
+  },
+  statLabel: {
+    color: '#64748B',
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: '700',
+    marginTop: 4,
+  },
+  inlineLoading: {
+    minHeight: 42,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 21,
+    backgroundColor: '#E0F2FE',
+    paddingHorizontal: 14,
+    marginTop: 14,
+    columnGap: 9,
+  },
+  inlineLoadingText: {
+    color: '#0369A1',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  section: {
+    marginTop: 24,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    columnGap: 12,
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    color: '#0F172A',
+    fontSize: 22,
+    lineHeight: 28,
+    fontWeight: '900',
+  },
+  sectionSubtitle: {
+    color: '#64748B',
+    fontSize: 13,
+    fontWeight: '700',
+    marginTop: 3,
+  },
+  aboutText: {
+    color: '#475569',
+    fontSize: 15,
+    lineHeight: 24,
+    fontWeight: '600',
+    textAlign: 'justify',
+  },
+  linkButton: {
+    minHeight: 38,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 19,
+    backgroundColor: '#E0F2FE',
+    paddingHorizontal: 12,
+    columnGap: 5,
+  },
+  linkButtonText: {
+    color: '#0284C7',
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  reviewCard: {
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
+    padding: 14,
+  },
+  reviewHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  reviewAvatar: {
+    width: 52,
+    height: 52,
+    borderRadius: 18,
+    backgroundColor: '#E2E8F0',
+  },
+  reviewAuthorBlock: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  reviewAuthor: {
+    color: '#0F172A',
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  reviewMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+    marginLeft: -5,
+  },
+  reviewDate: {
+    color: '#64748B',
+    fontSize: 12,
+    fontWeight: '700',
+    marginLeft: 8,
+  },
+  reviewContent: {
+    color: '#475569',
+    fontSize: 15,
+    lineHeight: 22,
+    fontWeight: '600',
+    marginTop: 12,
+  },
+  reviewImageRow: {
+    columnGap: 8,
+    paddingTop: 12,
+  },
+  reviewImage: {
+    width: 116,
+    height: 82,
+    borderRadius: 16,
+    backgroundColor: '#E2E8F0',
+  },
+  noReviewCard: {
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 24,
+    paddingVertical: 26,
+  },
+  noReviewIcon: {
+    width: 58,
+    height: 58,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 22,
+    backgroundColor: '#E0F2FE',
+    marginBottom: 12,
+  },
+  noReviewTitle: {
+    color: '#0F172A',
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  noReviewText: {
+    color: '#64748B',
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: 6,
+  },
+  reviewAction: {
+    minHeight: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 21,
+    backgroundColor: '#0284C7',
+    paddingHorizontal: 18,
+    marginTop: 16,
+  },
+  reviewActionText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '900',
+  },
 });
 
 export default styles;

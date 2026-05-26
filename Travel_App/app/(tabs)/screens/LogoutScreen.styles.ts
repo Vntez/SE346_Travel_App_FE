@@ -1,47 +1,180 @@
-import { StyleSheet } from "react-native";
-import { colors } from "../common/colors";
-import { commonStyles } from "../common/styles";
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
-  // Kế thừa style từ commonStyles (chứa container, imageFrame, button, buttonText...)
-  ...commonStyles,
-
-  containerChild: {
-    margin: 10,
-    justifyContent: 'center',
-    rowGap: 10
+  screen: {
+    flex: 1,
+    backgroundColor: '#F6F8FB',
   },
-
-  // Style riêng cho nút Logout (màu đỏ nhạt)
-  buttonLogOut: {
-    backgroundColor: colors.dangerSoft,
-    paddingVertical: 15,
-    width: 350, // Hoặc dùng '100%' tùy layout của bạn
-    borderRadius: 50,
+  header: {
+    minHeight: 76,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+  },
+  backButton: {
+    width: 48,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
   },
-
-  // Text màu đỏ cho nút Logout
-  buttonLogOutText: {
-    color: colors.danger,
-    fontSize: 18,
-    fontWeight: 'bold',
+  headerTextWrap: {
+    alignItems: 'center',
   },
-
-  titleText: {
-    fontSize: 35,
-    fontWeight: 'bold',
-    color: colors.textPrimary,
+  headerEyebrow: {
+    color: '#0284C7',
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  headerTitle: {
+    color: '#0F172A',
+    fontSize: 29,
+    lineHeight: 36,
+    fontWeight: '900',
+  },
+  headerSpacer: {
+    width: 48,
+    height: 48,
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 22,
+    paddingBottom: 36,
+  },
+  heroCard: {
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 32,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 22,
+    paddingTop: 28,
+    paddingBottom: 24,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 18 },
+    shadowOpacity: 0.08,
+    shadowRadius: 28,
+    elevation: 6,
+  },
+  routeLine: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  routeDot: {
+    width: 42,
+    height: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 21,
+    backgroundColor: '#E0F2FE',
+  },
+  routeDotActive: {
+    width: 42,
+    height: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 21,
+    backgroundColor: '#0284C7',
+  },
+  routeDash: {
+    flex: 1,
+    height: 2,
+    marginHorizontal: 12,
+    borderRadius: 2,
+    backgroundColor: '#BAE6FD',
+  },
+  heroIcon: {
+    width: 104,
+    height: 104,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 34,
+    backgroundColor: '#E0F2FE',
+    marginBottom: 22,
+  },
+  title: {
+    color: '#0F172A',
+    fontSize: 29,
+    lineHeight: 36,
+    fontWeight: '900',
     textAlign: 'center',
   },
-
-  descriptionText: {
-    color: colors.textMuted,
-    fontSize: 17,
+  description: {
+    color: '#64748B',
+    fontSize: 15,
+    lineHeight: 23,
+    fontWeight: '700',
     textAlign: 'center',
-  }
+    marginTop: 12,
+  },
+  noticeBox: {
+    width: '100%',
+    minHeight: 58,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: '#DCFCE7',
+    paddingHorizontal: 15,
+    columnGap: 10,
+    marginTop: 22,
+  },
+  noticeText: {
+    flex: 1,
+    color: '#047857',
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '800',
+  },
+  actionGroup: {
+    marginTop: 18,
+    rowGap: 12,
+  },
+  primaryButton: {
+    minHeight: 58,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 22,
+    backgroundColor: '#0284C7',
+    columnGap: 9,
+    shadowColor: '#0284C7',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+    elevation: 5,
+  },
+  primaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  dangerButton: {
+    minHeight: 58,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#FECACA',
+    borderRadius: 22,
+    backgroundColor: '#FEF2F2',
+    columnGap: 9,
+  },
+  dangerButtonText: {
+    color: '#DC2626',
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  buttonPressed: {
+    opacity: 0.82,
+  },
 });
 
 export default styles;

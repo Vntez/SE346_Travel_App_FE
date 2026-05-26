@@ -1,93 +1,236 @@
-import { StyleSheet } from "react-native";
-import { colors } from "../common/colors";
-import { commonStyles } from "../common/styles";
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
-  // Kế thừa các style chung
-  ...commonStyles,
-
-    avatarContainer : {
-        width: 160,
-        height: 160,
-    },
-  
-    avatarBorder: {
-        borderWidth: 3,
-        borderColor: colors.primary,
-        width: 150,
-        height: 150,
-        //backgroundColor: "#fff",
-        //     //backgroundColor: "#fff",
-        //     borderRadius: 70,
-        //     overflow: "hidden",
-        borderRadius: 70,
-        overflow: "hidden",
-        position: 'relative',
-    },
-  
-    iconContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        //borderWidth: 5,
-        //borderColor: colors.primary,
-        width: 50,
-        height: 50,
-        borderRadius: 70,
-        position: 'absolute',
-        bottom: 5, // combine with position to be clear
-        right: 10,
-        shadowColor: colors.primary,
-        shadowOpacity: 0.5, 
-        shadowRadius: 10, // cang be cang net, lon thi lan trong
-        shadowOffset: {width: 0, height: 4},
-    },
-  
-      // borderAvatar: {
-      //     borderWidth: 5,
-      //     borderColor: colors.primary,
-
-    profileMenuContainer: {
-        //flex: 1,
-        flexDirection: 'column',
-        marginHorizontal: 20,
-        marginTop: 30,
-        borderRadius: 30,
-        overflow: 'hidden',
-        //backgroundColor:'black'
-    },
-
-    profileMenuItemContainer: {
-        //flex: 1,
-        flexDirection: 'row',
-        //position: 'relative',
-        padding: 10,
-        //margin: 10,
-        borderRadius: 10,
-        //height: 80,
-        columnGap: 15,
-        alignItems:'center',
-        justifyContent: 'flex-start',
-        borderBottomColor: '#eae4e4',
-        borderBottomWidth: 2,
-        backgroundColor: "#ffffff"
-    },
-
-    profileMenuItemIcon: {
-        //position: 'relative',
-        width: 45,
-        height: 45,
-        borderRadius: 100,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-
-    profileMenuTextContainer: {
-        flexDirection: 'column',
-        flex: 1, // làm đầy phần text thì đẩy được phần > ra ngoài cùng
-        //marginRight: 70,
-        //backgroundColor: 'blue'
-    },
-      
+  screen: {
+    flex: 1,
+    backgroundColor: '#F6F8FB',
+  },
+  scrollContent: {
+    paddingHorizontal: 18,
+    paddingTop: 10,
+    paddingBottom: 112,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  headerEyebrow: {
+    color: '#0284C7',
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  headerTitle: {
+    color: '#0F172A',
+    fontSize: 30,
+    lineHeight: 37,
+    fontWeight: '900',
+    marginTop: 2,
+  },
+  headerIconButton: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 22,
+    backgroundColor: '#FFFFFF',
+  },
+  profileCard: {
+    borderRadius: 28,
+    backgroundColor: '#0F766E',
+    padding: 18,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 14 },
+    shadowOpacity: 0.12,
+    shadowRadius: 24,
+    elevation: 8,
+  },
+  profileTopRow: {
+    minHeight: 116,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarFrame: {
+    width: 98,
+    height: 98,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    borderWidth: 4,
+    borderColor: 'rgba(255,255,255,0.78)',
+    borderRadius: 32,
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+  },
+  avatarInitials: {
+    fontSize: 36,
+    fontWeight: '900',
+    letterSpacing: 0,
+  },
+  editAvatarButton: {
+    position: 'absolute',
+    left: 72,
+    bottom: 4,
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: '#0F766E',
+    borderRadius: 18,
+    backgroundColor: '#0284C7',
+  },
+  profileTextBlock: {
+    flex: 1,
+    marginLeft: 18,
+  },
+  displayName: {
+    color: '#FFFFFF',
+    fontSize: 25,
+    lineHeight: 31,
+    fontWeight: '900',
+  },
+  username: {
+    color: '#CCFBF1',
+    fontSize: 14,
+    fontWeight: '700',
+    marginTop: 6,
+  },
+  accountBadgeRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginTop: 18,
+  },
+  accountBadge: {
+    minHeight: 36,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    paddingHorizontal: 11,
+    columnGap: 6,
+  },
+  accountBadgeText: {
+    color: '#0F172A',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  infoGrid: {
+    flexDirection: 'row',
+    columnGap: 12,
+    marginTop: 14,
+  },
+  infoCard: {
+    flex: 1,
+    minHeight: 118,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 22,
+    backgroundColor: '#FFFFFF',
+    padding: 14,
+  },
+  infoIcon: {
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 15,
+    backgroundColor: '#E0F2FE',
+    marginBottom: 12,
+  },
+  locationInfoIcon: {
+    backgroundColor: '#DFF7EA',
+  },
+  infoLabel: {
+    color: '#64748B',
+    fontSize: 12,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  infoValue: {
+    color: '#0F172A',
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: '800',
+    marginTop: 4,
+  },
+  sectionHeader: {
+    marginTop: 24,
+    marginBottom: 12,
+  },
+  sectionEyebrow: {
+    color: '#0284C7',
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  sectionTitle: {
+    color: '#0F172A',
+    fontSize: 21,
+    lineHeight: 27,
+    fontWeight: '900',
+    marginTop: 2,
+  },
+  menuCard: {
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 26,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.06,
+    shadowRadius: 20,
+    elevation: 4,
+  },
+  menuItem: {
+    minHeight: 76,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  menuItemPressed: {
+    backgroundColor: '#F8FAFC',
+  },
+  menuDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  menuIconWrap: {
+    width: 48,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 18,
+    marginRight: 12,
+  },
+  menuTextBlock: {
+    flex: 1,
+    paddingRight: 10,
+  },
+  menuTitle: {
+    color: '#0F172A',
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  menuSubtitle: {
+    color: '#64748B',
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: '600',
+    marginTop: 3,
+  },
+  dangerText: {
+    color: '#DC2626',
+  },
 });
 
 export default styles;

@@ -1,29 +1,137 @@
-import styles from './DetailLocationScreen.styles';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
-import { RatingStartBar } from '../components/Rating';
-import { PicturesContainer } from '../components/ReviewPicture';
-import { fetchPlaceDetail } from '../../../lib/api/places';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Image, ImageBackground, Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { showErrorAlert } from '@/components/app-alert';
 import { addFavorite, removeFavorite } from '../../../lib/api/favorites';
-import type { PlaceDetail } from '../../../lib/api/types';
-import { colors } from '../common/colors';
+import { getCachedPlaceDetail, refreshPlaceDetail } from '../../../lib/api/places';
+import type { PlaceDetail, PlaceReview } from '../../../lib/api/types';
+import { getApiErrorMessage } from '../context/AuthContext';
+import { RatingStartBar } from '../components/Rating';
+import styles from './DetailLocationScreen.styles';
+
+type PlacePreview = {
+    Id: string;
+    Name: string;
+    Location: string;
+    Rate: number;
+    NumberOfRate: number;
+    Image: string;
+    Features: string;
+};
+
+const FALLBACK_IMAGE =
+    'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=80';
+
+const featureLabels: Record<string, string> = {
+    'Quiet Now': 'Yên tĩnh',
+    'Open Now': 'Đang mở cửa',
+    Popular: 'Được yêu thích',
+    Outdoor: 'Ngoài trời',
+    Indoor: 'Trong nhà',
+    Romantic: 'Lãng mạn',
+    'Family Friendly': 'Phù hợp gia đình',
+};
+
+const getFeatureLabel = (value?: string) => {
+    const normalized = value?.trim();
+    if (!normalized) {
+        return 'Nổi bật';
+    }
+    return featureLabels[normalized] ?? normalized;
+};
+
+const formatRatingCount = (value = 0) => {
+    if (value >= 1000) {
+        return `${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}k`;
+    }
+    return String(value);
+};
+
+const priceLabel = (level?: number | null) => {
+    if (level == null) {
+        return 'Chưa có';
+    }
+
+    if (level <= 1) return 'Tiết kiệm';
+    if (level === 2) return 'Vừa phải';
+    if (level === 3) return 'Cao cấp';
+    return 'Sang trọng';
+};
+
+function ReviewPreviewCard({ review }: { review: PlaceReview }) {
+    const avatar = review.ava || FALLBACK_IMAGE;
+
+    return (
+        <View style={styles.reviewCard}>
+            <View style={styles.reviewHeader}>
+                <Image source={{ uri: avatar }} style={styles.reviewAvatar} />
+                <View style={styles.reviewAuthorBlock}>
+                    <Text style={styles.reviewAuthor} numberOfLines={1}>
+                        {review.Name}
+                    </Text>
+                    <View style={styles.reviewMetaRow}>
+                        <RatingStartBar ratingValue={review.Rate} size={16} />
+                        <Text style={styles.reviewDate}>{review.Date}</Text>
+                    </View>
+                </View>
+            </View>
+
+            <Text style={styles.reviewContent} numberOfLines={4}>
+                {review.Content}
+            </Text>
+
+            {review.Pictures?.length ? (
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.reviewImageRow}
+                >
+                    {review.Pictures.slice(0, 4).map((uri, index) => (
+                        <Image key={`${uri}-${index}`} source={{ uri }} style={styles.reviewImage} />
+                    ))}
+                </ScrollView>
+            ) : null}
+        </View>
+    );
+}
 
 export default function DetailLocationScreen({ navigation, route }: any) {
     const placeId = route.params?.placeId as string | undefined;
-    const [place, setPlace] = useState<PlaceDetail | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [isLiked, setIsLiked] = useState(false);
+    const preview = route.params?.placePreview as PlacePreview | undefined;
+    const cachedPlace = placeId ? getCachedPlaceDetail(placeId) : undefined;
+    const [place, setPlace] = useState<PlaceDetail | null>(cachedPlace ?? null);
+    const [loading, setLoading] = useState(!cachedPlace);
+    const [favoriteBusy, setFavoriteBusy] = useState(false);
+    const [isLiked, setIsLiked] = useState(Boolean(cachedPlace?.isFavorite));
+
+    const viewData = useMemo(() => {
+        return {
+            id: place?.Id ?? preview?.Id ?? placeId ?? '',
+            name: place?.Name ?? preview?.Name ?? 'Địa điểm',
+            location: place?.Location ?? preview?.Location ?? 'Đang cập nhật vị trí',
+            rating: Number(place?.Rate ?? preview?.Rate ?? 0),
+            ratingCount: Number(place?.NumberOfRate ?? preview?.NumberOfRate ?? 0),
+            image: place?.Image ?? preview?.Image ?? FALLBACK_IMAGE,
+            feature: getFeatureLabel(place?.Features ?? preview?.Features),
+            about: place?.about,
+            priceLevel: place?.priceLevel,
+            reviews: place?.Reviews ?? [],
+        };
+    }, [place, placeId, preview]);
+
+    const isInitialLoading = loading && !place && !preview;
 
     const loadPlace = useCallback(async () => {
         if (!placeId) return;
+
         setLoading(true);
         try {
-            const data = await fetchPlaceDetail(placeId);
+            const data = await refreshPlaceDetail(placeId);
             setPlace(data);
             setIsLiked(Boolean(data.isFavorite));
-        } catch {
-            setPlace(null);
+        } catch (err) {
+            showErrorAlert(getApiErrorMessage(err), 'Không tải được địa điểm');
         } finally {
             setLoading(false);
         }
@@ -34,186 +142,193 @@ export default function DetailLocationScreen({ navigation, route }: any) {
     }, [loadPlace]);
 
     const toggleFavorite = async () => {
-        if (!placeId) return;
+        if (!placeId || favoriteBusy) return;
+
+        const nextValue = !isLiked;
+        setFavoriteBusy(true);
+        setIsLiked(nextValue);
+
         try {
-            if (isLiked) {
-                await removeFavorite(placeId);
-                setIsLiked(false);
-            } else {
+            if (nextValue) {
                 await addFavorite(placeId);
-                setIsLiked(true);
+            } else {
+                await removeFavorite(placeId);
             }
-        } catch {
-            // ignore
+        } catch (err) {
+            setIsLiked(!nextValue);
+            showErrorAlert(getApiErrorMessage(err), 'Không cập nhật được yêu thích');
+        } finally {
+            setFavoriteBusy(false);
         }
     };
 
-    if (loading) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color={colors.primary} />
-            </View>
-        );
-    }
+    const openReviews = () => {
+        navigation.navigate('All Reviews', {
+            placeId: viewData.id,
+            placeName: viewData.name,
+            placeRate: viewData.rating,
+            placeCount: viewData.ratingCount,
+            coverImage: viewData.image,
+        });
+    };
 
-    if (!place) {
+    if (!placeId) {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>Khong tim thay dia diem</Text>
-                <Pressable onPress={() => navigation.goBack()}>
-                    <Text style={{ color: colors.primary, marginTop: 10 }}>Quay lai</Text>
+            <SafeAreaView style={styles.centerScreen}>
+                <Ionicons name="alert-circle-outline" size={42} color="#DC2626" />
+                <Text style={styles.emptyTitle}>Thiếu thông tin địa điểm</Text>
+                <Pressable style={styles.emptyButton} onPress={() => navigation.goBack()}>
+                    <Text style={styles.emptyButtonText}>Quay lại</Text>
                 </Pressable>
-            </View>
+            </SafeAreaView>
         );
     }
 
-    const firstReview = place.Reviews[0];
+    if (isInitialLoading) {
+        return (
+            <SafeAreaView style={styles.centerScreen}>
+                <ActivityIndicator size="large" color="#0284C7" />
+                <Text style={styles.loadingText}>Đang mở địa điểm...</Text>
+            </SafeAreaView>
+        );
+    }
+
+    if (!viewData.id) {
+        return (
+            <SafeAreaView style={styles.centerScreen}>
+                <Ionicons name="map-outline" size={42} color="#0284C7" />
+                <Text style={styles.emptyTitle}>Không tìm thấy địa điểm</Text>
+                <Pressable style={styles.emptyButton} onPress={() => navigation.goBack()}>
+                    <Text style={styles.emptyButtonText}>Quay lại</Text>
+                </Pressable>
+            </SafeAreaView>
+        );
+    }
+
+    const firstReview = viewData.reviews[0];
 
     return (
-        <View style={{ flex: 1, justifyContent: 'center', backgroundColor: '#FFFFFF', marginVertical: 40 }}>
-            <ScrollView style={[styles.container, { margin: 0 }]}>
-                <View style={{ margin: 0, position: 'relative' }}>
-                    <View style={[styles.imageFrame, { height: 350, borderRadius: 0, borderWidth: 0 }]}>
-                        <Image
-                            source={{ uri: place.Image }}
-                            style={{ width: "100%", height: "100%" }} />
-                    </View>
-                    <Pressable style={styles.roundButton}
-                        onPress={() => navigation.goBack()}>
-                        <Ionicons name="chevron-back" size={25}
-                            color="white" />
-                    </Pressable>
-                    <Pressable style={[styles.roundButton, {
-                        position: 'absolute',
-                        right: 15,
-                        top: 15,
-                        zIndex: 1,
-                        backgroundColor: 'rgba(0,0,0,0.2)',
-                        borderRadius: 20,
-                        padding: 5
-                    }]}
-                        onPress={toggleFavorite}>
-                        <Ionicons name="heart"
-                            size={24}
-                            color={isLiked ? "red" : "white"} />
-                    </Pressable>
-                </View>
+        <SafeAreaView style={styles.screen} edges={['top']}>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+                <ImageBackground source={{ uri: viewData.image }} style={styles.hero} imageStyle={styles.heroImage}>
+                    <View style={styles.heroOverlay} />
 
-                <View style={{ borderRadius: 20, backgroundColor: '#FFFFFF', marginTop: -20 }}>
-                    <View style={{ flexDirection: 'column', margin: 15 }}>
-                        <Text style={{ fontSize: 25, fontWeight: '700', marginTop: 10 }}>
-                            {place.Name}
+                    <View style={styles.heroTopBar}>
+                        <Pressable style={styles.roundButton} onPress={() => navigation.goBack()}>
+                            <Ionicons name="chevron-back" size={23} color="#FFFFFF" />
+                        </Pressable>
+
+                        <Pressable
+                            style={[styles.roundButton, isLiked && styles.favoriteButtonActive]}
+                            onPress={toggleFavorite}
+                            disabled={favoriteBusy}
+                        >
+                            {favoriteBusy ? (
+                                <ActivityIndicator size="small" color="#FFFFFF" />
+                            ) : (
+                                <Ionicons
+                                    name={isLiked ? 'heart' : 'heart-outline'}
+                                    size={22}
+                                    color={isLiked ? '#FFFFFF' : '#FFFFFF'}
+                                />
+                            )}
+                        </Pressable>
+                    </View>
+
+                    <View style={styles.heroBottom}>
+                        <View style={styles.featurePill}>
+                            <Ionicons name="sparkles-outline" size={15} color="#0369A1" />
+                            <Text style={styles.featurePillText}>{viewData.feature}</Text>
+                        </View>
+
+                        <Text style={styles.title} numberOfLines={2}>
+                            {viewData.name}
                         </Text>
-                        <View style={{ flexDirection: 'row', columnGap: 7 }}>
-                            <Ionicons name="location-sharp" size={18} color="#00B4D8" />
-                            <Text style={{ color: '#353232da', fontWeight: '600' }}>
-                                {place.Location}
+
+                        <View style={styles.locationRow}>
+                            <Ionicons name="location-outline" size={18} color="#E0F2FE" />
+                            <Text style={styles.locationText} numberOfLines={2}>
+                                {viewData.location}
                             </Text>
                         </View>
+                    </View>
+                </ImageBackground>
 
-                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ borderRadius: 15 }}>
-                            <View style={[styles.detailCard, { marginLeft: 3 }]}>
-                                <View style={{ borderRadius: 20, backgroundColor: "#FEF9C3", margin: 15, padding: 10 }}>
-                                    <Ionicons name="star" size={18} color="#EAB308" />
-                                </View>
-                                <View style={{ flexDirection: 'column', justifyContent: 'center', marginRight: 15 }}>
-                                    <View style={{ flexDirection: 'row', columnGap: 5, justifyContent: 'center', alignItems: 'center' }}>
-                                        <Text style={{ fontWeight: '700', fontSize: 18 }}>
-                                            {place.Rate}
-                                        </Text>
-                                        <Text style={{ fontWeight: '400', color: '#6B7280' }}>
-                                            ({place.NumberOfRate})
-                                        </Text>
-                                    </View>
-                                    <Text style={{ fontWeight: '600', color: '#6B7280' }}>
-                                        RATINGS
-                                    </Text>
-                                </View>
+                <View style={styles.contentCard}>
+                    <View style={styles.quickStatsRow}>
+                        <View style={styles.statCard}>
+                            <View style={[styles.statIcon, styles.ratingIcon]}>
+                                <Ionicons name="star" size={18} color="#D97706" />
                             </View>
+                            <Text style={styles.statValue}>{viewData.rating.toFixed(1)}</Text>
+                            <Text style={styles.statLabel}>{formatRatingCount(viewData.ratingCount)} đánh giá</Text>
+                        </View>
 
-                            {place.priceLevel != null && (
-                                <View style={styles.detailCard}>
-                                    <View style={{ borderRadius: 20, backgroundColor: "#DCFCE7", margin: 15, padding: 10 }}>
-                                        <Ionicons name="logo-usd" size={18} color="#22C55E" />
-                                    </View>
-                                    <View style={{ flexDirection: 'column', justifyContent: 'center', marginRight: 15 }}>
-                                        <Text style={{ fontWeight: '700', fontSize: 18 }}>
-                                            {place.priceLevel}
-                                        </Text>
-                                        <Text style={{ fontWeight: '600', color: '#6B7280' }}>
-                                            PRICE LEVEL
-                                        </Text>
-                                    </View>
-                                </View>
-                            )}
-
-                            <View style={styles.detailCard}>
-                                <View style={{ borderRadius: 20, backgroundColor: "#E0F2FE", margin: 15, padding: 10 }}>
-                                    <Ionicons name="people" size={18} color="#0EA5E9" />
-                                </View>
-                                <View style={{ flexDirection: 'column', justifyContent: 'center', marginRight: 15 }}>
-                                    <Text style={{ fontWeight: '700', fontSize: 18 }}>
-                                        {place.Features}
-                                    </Text>
-                                    <Text style={{ fontWeight: '600', color: '#6B7280' }}>
-                                        FEATURE
-                                    </Text>
-                                </View>
+                        <View style={styles.statCard}>
+                            <View style={[styles.statIcon, styles.priceIcon]}>
+                                <Ionicons name="wallet-outline" size={18} color="#047857" />
                             </View>
-                        </ScrollView>
+                            <Text style={styles.statValue}>{priceLabel(viewData.priceLevel)}</Text>
+                            <Text style={styles.statLabel}>Mức giá</Text>
+                        </View>
 
-                        <Text style={{ fontSize: 25, fontWeight: '700', marginTop: 10 }}>
-                            About
-                        </Text>
-                        <Text style={{ marginTop: 10, color: '#353232da', fontWeight: '600', textAlign: 'justify' }}>
-                            {place.about || 'No description available.'}
+                        <View style={styles.statCard}>
+                            <View style={[styles.statIcon, styles.featureIcon]}>
+                                <Ionicons name="people-outline" size={18} color="#0369A1" />
+                            </View>
+                            <Text style={styles.statValue} numberOfLines={1}>
+                                {viewData.feature}
+                            </Text>
+                            <Text style={styles.statLabel}>Không khí</Text>
+                        </View>
+                    </View>
+
+                    {loading ? (
+                        <View style={styles.inlineLoading}>
+                            <ActivityIndicator size="small" color="#0284C7" />
+                            <Text style={styles.inlineLoadingText}>Đang cập nhật thông tin mới nhất</Text>
+                        </View>
+                    ) : null}
+
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Giới thiệu</Text>
+                        <Text style={styles.aboutText}>
+                            {viewData.about || 'Địa điểm này chưa có mô tả chi tiết. Bạn có thể xem đánh giá để tham khảo trải nghiệm thực tế từ người dùng khác.'}
                         </Text>
                     </View>
 
-                    {firstReview && (
-                        <View style={{ flexDirection: 'column', margin: 15 }}>
-                            <View style={{ flexDirection: 'row', marginTop: 10 }}>
-                                <Text style={{ fontSize: 25, fontWeight: '700', flex: 1 }}>
-                                    Reviews
-                                </Text>
-
-                                <Text style={{ color: '#00B4D8', fontWeight: '600' }}
-                                    onPress={() => navigation.navigate("All Reviews", {
-                                      placeId: place.Id,
-                                      placeName: place.Name,
-                                    })}>
-                                    See All
+                    <View style={styles.section}>
+                        <View style={styles.sectionHeader}>
+                            <View>
+                                <Text style={styles.sectionTitle}>Đánh giá nổi bật</Text>
+                                <Text style={styles.sectionSubtitle}>
+                                    {viewData.ratingCount ? `${formatRatingCount(viewData.ratingCount)} lượt đánh giá từ cộng đồng` : 'Chưa có đánh giá'}
                                 </Text>
                             </View>
 
-                            <PicturesContainer pictures={firstReview.Pictures} />
-
-                            <View style={[styles.detailCard, { flexDirection: 'column', margin: 0, marginTop: 30, padding: 10, rowGap: 10 }]}>
-                                <View style={{ flexDirection: 'row' }}>
-                                    <View style={[styles.imageFrame, { width: 60, height: 60, borderRadius: 30, borderWidth: 0 }]}>
-                                        <Image
-                                            source={{ uri: firstReview.ava }}
-                                            style={{ width: "100%", height: "100%" }}
-                                            resizeMode="cover" />
-                                    </View>
-                                    <View style={{ flexDirection: 'column', marginHorizontal: 10, justifyContent: 'center' }}>
-                                        <Text style={{ fontSize: 20, fontWeight: '700' }}>
-                                            {firstReview.Name}
-                                        </Text>
-                                        <Text style={{ color: '#353232da', fontWeight: '600' }}>
-                                            {firstReview.Date}
-                                        </Text>
-                                    </View>
-                                </View>
-                                <RatingStartBar ratingValue={firstReview.Rate} size={20} />
-                                <Text style={{ marginLeft: 5 }}>
-                                    {firstReview.Content}
-                                </Text>
-                            </View>
+                            <Pressable style={styles.linkButton} onPress={openReviews}>
+                                <Text style={styles.linkButtonText}>Xem tất cả</Text>
+                                <Ionicons name="arrow-forward" size={16} color="#0284C7" />
+                            </Pressable>
                         </View>
-                    )}
+
+                        {firstReview ? (
+                            <ReviewPreviewCard review={firstReview} />
+                        ) : (
+                            <View style={styles.noReviewCard}>
+                                <View style={styles.noReviewIcon}>
+                                    <Ionicons name="chatbubble-ellipses-outline" size={28} color="#0284C7" />
+                                </View>
+                                <Text style={styles.noReviewTitle}>Chưa có đánh giá</Text>
+                                <Text style={styles.noReviewText}>Hãy là người đầu tiên chia sẻ trải nghiệm tại đây.</Text>
+                                <Pressable style={styles.reviewAction} onPress={openReviews}>
+                                    <Text style={styles.reviewActionText}>Viết đánh giá</Text>
+                                </Pressable>
+                            </View>
+                        )}
+                    </View>
                 </View>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }

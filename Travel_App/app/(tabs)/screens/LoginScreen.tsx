@@ -1,10 +1,13 @@
-import styles from './LoginScreen.styles';
+import { Ionicons } from '@expo/vector-icons';
+import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
     ActivityIndicator,
-    Alert,
     Image,
     ImageBackground,
+    KeyboardAvoidingView,
+    Modal,
+    Platform,
     Pressable,
     ScrollView,
     Text,
@@ -12,26 +15,53 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { getFriendlyMessage, showAppAlert, showErrorAlert, showSuccessAlert } from '@/components/app-alert';
 import { useAuth, getApiErrorMessage } from '../context/AuthContext';
 import { forgotPassword, oauthLogin } from '../../../lib/api/auth';
+import styles from './LoginScreen.styles';
+
+const AUTH_BACKGROUND =
+    'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&h=1600&q=85';
 
 export default function LoginScreen({ navigation }: any) {
     const [isPasswordVisible, setPasswordVisible] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [forgotVisible, setForgotVisible] = useState(false);
+    const [resetEmail, setResetEmail] = useState('');
+    const [resetSubmitting, setResetSubmitting] = useState(false);
     const { login } = useAuth();
 
+    const openForgotPassword = () => {
+        setResetEmail(email.trim());
+        setForgotVisible(true);
+    };
+
+    const closeForgotPassword = () => {
+        if (!resetSubmitting) {
+            setForgotVisible(false);
+        }
+    };
+
     const handleForgotPassword = async () => {
-        if (!email.trim()) {
-            Alert.alert('Loi', 'Nhap email truoc khi dat lai mat khau');
+        const nextEmail = resetEmail.trim();
+        if (!nextEmail) {
+            showErrorAlert('Vui lòng nhập email để đặt lại mật khẩu.');
             return;
         }
+
+        setResetSubmitting(true);
         try {
-            const res = await forgotPassword(email.trim());
-            Alert.alert('Thanh cong', res.message);
+            const res = await forgotPassword(nextEmail);
+            setEmail(nextEmail);
+            setForgotVisible(false);
+            showSuccessAlert(getFriendlyMessage(res.message));
         } catch (err) {
-            Alert.alert('Loi', getApiErrorMessage(err));
+            showErrorAlert(getApiErrorMessage(err));
+        } finally {
+            setResetSubmitting(false);
         }
     };
 
@@ -40,18 +70,20 @@ export default function LoginScreen({ navigation }: any) {
             await oauthLogin(provider);
         } catch (err) {
             const msg = getApiErrorMessage(err);
-            Alert.alert(
-                'Chua ho tro',
-                msg.includes('NOT_CONFIGURED')
-                    ? `Dang nhap ${provider} chua duoc cau hinh tren server`
-                    : msg
-            );
+            const providerLabel = provider === 'google' ? 'Google' : 'Apple';
+            showAppAlert({
+                title: 'Chưa hỗ trợ',
+                message: msg.includes('NOT_CONFIGURED')
+                    ? `Đăng nhập bằng ${providerLabel} chưa được cấu hình trên máy chủ.`
+                    : getFriendlyMessage(msg),
+                type: 'warning',
+            });
         }
     };
 
     const handleLogin = async () => {
         if (!email.trim() || !password) {
-            Alert.alert('Loi', 'Vui long nhap email va mat khau');
+            showErrorAlert('Vui lòng nhập email và mật khẩu.');
             return;
         }
         setSubmitting(true);
@@ -59,129 +91,206 @@ export default function LoginScreen({ navigation }: any) {
             await login(email.trim(), password);
         } catch (err) {
             const msg = getApiErrorMessage(err);
-            const text =
-                msg === 'INVALID_CREDENTIALS'
-                    ? 'Email hoac mat khau khong dung'
-                    : msg;
-            Alert.alert('Dang nhap that bai', text);
+            showErrorAlert(msg, 'Đăng nhập thất bại');
         } finally {
             setSubmitting(false);
         }
     };
 
     return (
-        <ImageBackground
-            source={{ uri: "https://i.pinimg.com/736x/77/b4/21/77b421686d6088e6527cf57d68c69e96.jpg" }}
-            style={styles.background}
-            resizeMode="cover"
-        >
-            <View style={styles.overlay}>
-                <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', marginTop: 40 }}>
+        <ImageBackground source={{ uri: AUTH_BACKGROUND }} style={styles.background} resizeMode="cover">
+            <StatusBar style="light" translucent backgroundColor="transparent" />
+            <View style={styles.overlay} />
+            <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+                <KeyboardAvoidingView
+                    style={styles.keyboardView}
+                    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                >
+                    <ScrollView
+                        keyboardShouldPersistTaps="handled"
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={styles.scrollContent}
+                    >
+                        <View style={styles.header}>
+                            <View style={styles.brandPill}>
+                                <Ionicons name="airplane" size={18} color="#0EA5E9" />
+                                <Text style={styles.brandText}>Travel App</Text>
+                            </View>
+                            <Text style={styles.heroTitle}>Chào mừng trở lại</Text>
+                            <Text style={styles.heroSubtitle}>Đăng nhập để tiếp tục hành trình của bạn.</Text>
+                        </View>
 
-                    <View style={{ alignItems: 'center', marginBottom: 40 }}>
-                        <Image
-                            source={{ uri: "https://cdn-icons-png.flaticon.com/128/201/201623.png" }}
-                            style={{ height: 70, width: 70, marginBottom: 5 }}
-                        />
-                        <Text style={{ fontWeight: 'bold', fontSize: 32, textAlign: 'center', color: '#f2ebeb' }}>
-                            Welcome Back
-                        </Text>
-                        <Text style={{ marginTop: 2, textAlign: 'center', color: '#b6adad', fontSize: 18 }}>
-                            Log in to continue your adventure
-                        </Text>
-                    </View>
+                        <View style={styles.formCard}>
+                            <View style={styles.formHeader}>
+                                <Text style={styles.formTitle}>Đăng nhập</Text>
+                                <Text style={styles.formSubtitle}>Quản lý chuyến đi, đánh giá và ưu đãi của bạn.</Text>
+                            </View>
 
-                    <View style={styles.container}>
-                        <View style={[styles.inputContainer, { marginBottom: 20 }]}>
-                            <Image
-                                source={require('../../../assets/images/email-icon.png')}
-                                style={{ width: 20, height: 20, marginRight: 10 }}
-                            />
+                            <View style={styles.field}>
+                                <Text style={styles.label}>Email</Text>
+                                <View style={styles.inputShell}>
+                                    <Ionicons name="mail-outline" size={20} color="#64748B" />
+                                    <TextInput
+                                        placeholder="you@example.com"
+                                        style={styles.input}
+                                        placeholderTextColor="#94A3B8"
+                                        value={email}
+                                        onChangeText={setEmail}
+                                        keyboardType="email-address"
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                    />
+                                </View>
+                            </View>
+
+                            <View style={styles.field}>
+                                <View style={styles.passwordLabelRow}>
+                                    <Text style={styles.label}>Mật khẩu</Text>
+                                    <TouchableOpacity onPress={openForgotPassword}>
+                                        <Text style={styles.forgotText}>Quên mật khẩu?</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.inputShell}>
+                                    <Ionicons name="lock-closed-outline" size={20} color="#64748B" />
+                                    <TextInput
+                                        placeholder="Nhập mật khẩu"
+                                        secureTextEntry={!isPasswordVisible}
+                                        style={styles.input}
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                        placeholderTextColor="#94A3B8"
+                                        value={password}
+                                        onChangeText={setPassword}
+                                    />
+                                    <TouchableOpacity
+                                        style={styles.eyeButton}
+                                        onPress={() => setPasswordVisible(!isPasswordVisible)}
+                                    >
+                                        <Ionicons
+                                            name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
+                                            size={22}
+                                            color="#0F172A"
+                                        />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+
+                            <Pressable
+                                style={({ pressed }) => [
+                                    styles.primaryButton,
+                                    (pressed || submitting) && styles.primaryButtonPressed,
+                                ]}
+                                onPress={handleLogin}
+                                disabled={submitting}
+                            >
+                                {submitting ? (
+                                    <ActivityIndicator color="#fff" />
+                                ) : (
+                                    <>
+                                        <Text style={styles.primaryButtonText}>Đăng nhập</Text>
+                                        <Ionicons name="arrow-forward" size={20} color="#fff" />
+                                    </>
+                                )}
+                            </Pressable>
+
+                            <View style={styles.dividerRow}>
+                                <View style={styles.divider} />
+                                <Text style={styles.dividerText}>Hoặc tiếp tục với</Text>
+                                <View style={styles.divider} />
+                            </View>
+
+                            <View style={styles.socialRow}>
+                                <Pressable style={styles.socialButton} onPress={() => handleOAuth('google')}>
+                                    <Image source={require('../../../assets/images/google-icon.png')} style={styles.socialIcon} />
+                                    <Text style={styles.socialText}>Google</Text>
+                                </Pressable>
+
+                                <Pressable style={styles.socialButton} onPress={() => handleOAuth('apple')}>
+                                    <Image source={require('../../../assets/images/apple-icon.png')} style={styles.socialIcon} />
+                                    <Text style={styles.socialText}>Apple</Text>
+                                </Pressable>
+                            </View>
+                        </View>
+
+                        <View style={styles.registerRow}>
+                            <Text style={styles.registerText}>Chưa có tài khoản?</Text>
+                            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                                <Text style={styles.registerLink}>Đăng ký</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </ScrollView>
+                </KeyboardAvoidingView>
+            </SafeAreaView>
+
+            <Modal
+                transparent
+                visible={forgotVisible}
+                animationType="fade"
+                statusBarTranslucent
+                onRequestClose={closeForgotPassword}
+            >
+                <KeyboardAvoidingView
+                    style={styles.forgotBackdrop}
+                    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                >
+                    <View style={styles.forgotCard}>
+                        <View style={styles.forgotHeader}>
+                            <View style={styles.forgotIconWrap}>
+                                <Ionicons name="mail-unread-outline" size={26} color="#0EA5E9" />
+                            </View>
+                            <TouchableOpacity
+                                style={styles.forgotCloseButton}
+                                onPress={closeForgotPassword}
+                                disabled={resetSubmitting}
+                            >
+                                <Ionicons name="close" size={22} color="#334155" />
+                            </TouchableOpacity>
+                        </View>
+
+                        <Text style={styles.forgotTitle}>Đặt lại mật khẩu</Text>
+                        <Text style={styles.forgotDescription}>
+                            Nhập email đã đăng ký. Chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu cho bạn.
+                        </Text>
+
+                        <Text style={styles.forgotLabel}>Email</Text>
+                        <View style={styles.forgotInputShell}>
+                            <Ionicons name="mail-outline" size={20} color="#64748B" />
                             <TextInput
-                                placeholder="Email Address"
-                                style={{ flex: 1 }}
-                                placeholderTextColor="#ccc"
-                                value={email}
-                                onChangeText={setEmail}
+                                value={resetEmail}
+                                onChangeText={setResetEmail}
+                                placeholder="you@example.com"
+                                placeholderTextColor="#94A3B8"
                                 keyboardType="email-address"
                                 autoCapitalize="none"
+                                autoCorrect={false}
+                                style={styles.forgotInput}
                             />
                         </View>
 
-                        <View style={styles.inputContainer}>
-                            <Image
-                                source={require('../../../assets/images/password-icon.png')}
-                                style={{ width: 20, height: 20, marginRight: 20 }}
-                            />
-                            <TextInput
-                                placeholder="Password"
-                                secureTextEntry={!isPasswordVisible}
-                                style={{ flex: 1 }}
-                                autoCapitalize="none"
-                                placeholderTextColor="#ccc"
-                                value={password}
-                                onChangeText={setPassword}
-                            />
-                            <TouchableOpacity onPress={() => setPasswordVisible(!isPasswordVisible)}>
-                                <Image
-                                    source={isPasswordVisible
-                                        ? require('../../../assets/images/hidden_eyepassword-icon.png')
-                                        : require('../../../assets/images/eyepassword-icon.png')}
-                                    style={{ width: 20, height: 20, marginRight: 20 }}
-                                />
-                            </TouchableOpacity>
-                        </View>
-
-                        <View style={{ alignItems: 'flex-end', paddingRight: 20, marginTop: 10 }}>
-                            <TouchableOpacity onPress={handleForgotPassword}>
-                                <Text style={styles.linkText}>Forgot Password</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    <View style={[styles.containerChild, { marginTop: 20, alignItems: 'center' }]}>
-                        <Pressable style={styles.button} onPress={handleLogin} disabled={submitting}>
-                            {submitting ? (
-                                <ActivityIndicator color="#fff" />
-                            ) : (
-                                <Text style={styles.buttonText}>Log in</Text>
-                            )}
-                        </Pressable>
-                    </View>
-
-                    <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
-                        <View style={styles.lineContainer}>
-                            <View style={styles.line} />
-                            <Text style={styles.text}>Or continue with</Text>
-                            <View style={styles.line} />
-                        </View>
-
-                        <View style={[styles.containerGG_Apple, { marginTop: 20 }]}>
-                            <Pressable style={styles.buttonGG_Apple} onPress={() => handleOAuth('google')}>
-                                <View style={styles.containerImageGG_Apple}>
-                                    <Image source={require('../../../assets/images/google-icon.png')} style={{ width: 20, height: 20 }} />
-                                    <Text style={styles.buttonGG_AppleText}>Google</Text>
-                                </View>
+                        <View style={styles.forgotActions}>
+                            <Pressable
+                                style={styles.forgotSecondaryButton}
+                                onPress={closeForgotPassword}
+                                disabled={resetSubmitting}
+                            >
+                                <Text style={styles.forgotSecondaryText}>Hủy</Text>
                             </Pressable>
 
-                            <Pressable style={styles.buttonGG_Apple} onPress={() => handleOAuth('apple')}>
-                                <View style={styles.containerImageGG_Apple}>
-                                    <Image source={require('../../../assets/images/apple-icon.png')} style={{ width: 20, height: 20 }} />
-                                    <Text style={styles.buttonGG_AppleText}>Apple</Text>
-                                </View>
+                            <Pressable
+                                style={[styles.forgotPrimaryButton, resetSubmitting && styles.primaryButtonPressed]}
+                                onPress={handleForgotPassword}
+                                disabled={resetSubmitting}
+                            >
+                                {resetSubmitting ? (
+                                    <ActivityIndicator color="#FFFFFF" />
+                                ) : (
+                                    <Text style={styles.forgotPrimaryText}>Gửi yêu cầu</Text>
+                                )}
                             </Pressable>
                         </View>
-
-                        <Text style={[styles.text, { marginTop: 40, color: '#ccc2c2', marginBottom: 40 }]}>
-                            Don't have an account?{' '}
-                            <Text style={styles.linkText} onPress={() => navigation.navigate("Register")}>
-                                Register
-                            </Text>
-                        </Text>
                     </View>
-
-                </ScrollView>
-            </View>
+                </KeyboardAvoidingView>
+            </Modal>
         </ImageBackground>
     );
 }

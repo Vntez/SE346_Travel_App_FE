@@ -1,73 +1,446 @@
-import { StyleSheet } from "react-native";
-import { colors } from "../common/colors";
-import { commonStyles } from "../common/styles";
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
-  ...commonStyles,
-  
-  // Search bar override
-  searchContainer: {
-    ...commonStyles.inputContainer,
-    marginHorizontal: 0,
-    borderWidth: 2,
-    marginTop: 10,
-    paddingHorizontal: 10,
+  screen: {
+    flex: 1,
+    backgroundColor: '#F6F8FB',
   },
-
-  containerCategoryButton: {
+  loadingScreen: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F6F8FB',
+    paddingHorizontal: 24,
+  },
+  loadingCard: {
+    width: '100%',
+    maxWidth: 320,
+    alignItems: 'center',
+    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 30,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.08,
+    shadowRadius: 24,
+    elevation: 6,
+  },
+  loadingText: {
+    marginTop: 14,
+    color: '#475569',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  listContent: {
+    paddingBottom: 112,
+  },
+  headerContent: {
+    paddingHorizontal: 18,
+    paddingTop: 8,
+    paddingBottom: 12,
+  },
+  heroCard: {
+    minHeight: 255,
+    overflow: 'hidden',
+    borderRadius: 28,
+    backgroundColor: '#0F172A',
+    padding: 18,
+    justifyContent: 'space-between',
+  },
+  heroImage: {
+    borderRadius: 28,
+  },
+  heroOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(15, 23, 42, 0.36)',
+  },
+  topBar: {
+    zIndex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  locationChip: {
+    minHeight: 38,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 19,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    paddingHorizontal: 12,
+    columnGap: 6,
+  },
+  locationText: {
+    color: '#0F172A',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  profileButton: {
+    width: 42,
+    height: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    borderRadius: 21,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+  },
+  profileAvatar: {
+    width: '100%',
+    height: '100%',
+  },
+  heroCopy: {
+    zIndex: 1,
+    maxWidth: 310,
+    marginBottom: 26,
+  },
+  greeting: {
+    color: '#E0F2FE',
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 7,
+  },
+  heroTitle: {
+    color: '#FFFFFF',
+    fontSize: 31,
+    lineHeight: 38,
+    fontWeight: '900',
+  },
+  heroSubtitle: {
+    color: '#E2E8F0',
+    fontSize: 15,
+    lineHeight: 22,
+    fontWeight: '500',
+    marginTop: 10,
+  },
+  searchPanel: {
+    marginTop: -31,
+    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
+    padding: 14,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 14 },
+    shadowOpacity: 0.1,
+    shadowRadius: 24,
+    elevation: 8,
+  },
+  searchContainer: {
+    minHeight: 52,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 18,
+    backgroundColor: '#F8FAFC',
+    paddingHorizontal: 14,
+    columnGap: 10,
+  },
+  searchInput: {
+    flex: 1,
+    minHeight: 50,
+    color: '#0F172A',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  clearButton: {
+    width: 28,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 14,
+    backgroundColor: '#E2E8F0',
+  },
+  aiCard: {
+    minHeight: 70,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#BAE6FD',
+    borderRadius: 20,
+    backgroundColor: '#F0F9FF',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    marginTop: 12,
+    columnGap: 12,
+  },
+  aiCardPressed: {
+    transform: [{ scale: 0.99 }],
+    opacity: 0.9,
+  },
+  aiCardDisabled: {
+    opacity: 0.72,
+  },
+  aiIconWrap: {
+    width: 42,
+    height: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+    backgroundColor: '#0284C7',
+  },
+  aiCopy: {
+    flex: 1,
+  },
+  aiTitle: {
+    color: '#0F172A',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  aiSubtitle: {
+    color: '#64748B',
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: '500',
+    marginTop: 3,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 24,
+    marginBottom: 12,
+  },
+  sectionEyebrow: {
+    color: '#0284C7',
+    fontSize: 12,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  sectionTitle: {
+    color: '#0F172A',
+    fontSize: 20,
+    lineHeight: 26,
+    fontWeight: '900',
+    marginTop: 2,
+  },
+  refreshButton: {
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 19,
+    backgroundColor: '#E0F2FE',
+  },
+  categoryGrid: {
     flexDirection: 'row',
     columnGap: 10,
-    alignItems: 'center'
   },
-
-  categoryButtonText: {
-    color: 'black',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-
-  // List Container
-  listWrapper: {
-    marginTop: 10,
-    backgroundColor: colors.surfaceMuted,
+  categoryButton: {
     flex: 1,
-    borderRadius: 15,
-  },
-
-  // Place Card Style
-  card: {
-    backgroundColor: colors.surface,
-    flexDirection: 'column',
-    margin: 10,
-    borderWidth: 1,
-    borderRadius: 15,
-    borderColor: colors.borderLight,
+    minHeight: 96,
+    justifyContent: 'space-between',
+    borderRadius: 20,
     padding: 12,
   },
-
-  contentContainer : {
-    flexDirection: 'row',
+  categoryIcon: {
+    width: 38,
+    height: 38,
     alignItems: 'center',
-    marginTop: 5 
+    justifyContent: 'center',
+    borderRadius: 14,
   },
-
-  ratingBadge: {
+  categoryText: {
+    color: '#0F172A',
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: '800',
+  },
+  categoryTextActive: {
+    color: '#FFFFFF',
+  },
+  statsRow: {
     flexDirection: 'row',
-    backgroundColor: colors.surfaceMuted,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 10,
+    columnGap: 10,
+    marginTop: 16,
+  },
+  statCard: {
+    flex: 1,
+    minHeight: 76,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 14,
+  },
+  statNumber: {
+    color: '#0F172A',
+    fontSize: 23,
+    fontWeight: '900',
+  },
+  statLabel: {
+    color: '#64748B',
+    fontSize: 12,
+    fontWeight: '700',
+    marginTop: 2,
+  },
+  cardGap: {
+    height: 14,
+  },
+  placeCard: {
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 26,
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 18,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    elevation: 5,
+  },
+  placeCardPressed: {
+    transform: [{ scale: 0.99 }],
+    opacity: 0.96,
+  },
+  placeImageWrap: {
+    height: 178,
+    overflow: 'hidden',
+    backgroundColor: '#CBD5E1',
+  },
+  placeImage: {
+    width: '100%',
+    height: '100%',
+  },
+  imageShade: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(15, 23, 42, 0.08)',
+  },
+  ratingPill: {
+    position: 'absolute',
+    top: 14,
+    left: 14,
+    minHeight: 34,
+    flexDirection: 'row',
     alignItems: 'center',
+    borderRadius: 17,
+    backgroundColor: 'rgba(255,255,255,0.94)',
+    paddingHorizontal: 10,
     columnGap: 4,
   },
-
-  TagContainer:  {
-    height: 1, 
-    backgroundColor: colors.surface, 
-    width: '100%', 
-    marginVertical: 10 
-  }
-
+  ratingText: {
+    color: '#0F172A',
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  ratingCount: {
+    color: '#64748B',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  featureBadge: {
+    position: 'absolute',
+    right: 14,
+    bottom: 14,
+    maxWidth: '70%',
+    minHeight: 34,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 17,
+    paddingHorizontal: 10,
+    columnGap: 6,
+  },
+  featureText: {
+    flexShrink: 1,
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  placeBody: {
+    padding: 16,
+  },
+  placeTitle: {
+    color: '#0F172A',
+    fontSize: 21,
+    lineHeight: 27,
+    fontWeight: '900',
+  },
+  placeLocationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 6,
+    marginTop: 8,
+  },
+  placeLocation: {
+    flex: 1,
+    color: '#64748B',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  placeFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 16,
+    columnGap: 12,
+  },
+  metaRow: {
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  metaChip: {
+    minHeight: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 15,
+    backgroundColor: '#F1F5F9',
+    paddingHorizontal: 9,
+    columnGap: 5,
+  },
+  metaText: {
+    color: '#475569',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  detailButton: {
+    minHeight: 42,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 21,
+    backgroundColor: '#0284C7',
+    paddingHorizontal: 14,
+    columnGap: 6,
+  },
+  detailButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  emptyState: {
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 24,
+    paddingVertical: 30,
+    marginHorizontal: 18,
+    marginTop: 4,
+  },
+  emptyIcon: {
+    width: 58,
+    height: 58,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 22,
+    backgroundColor: '#E0F2FE',
+    marginBottom: 14,
+  },
+  emptyTitle: {
+    color: '#0F172A',
+    fontSize: 18,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+  emptyText: {
+    color: '#64748B',
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginTop: 6,
+  },
 });
 
 export default styles;
